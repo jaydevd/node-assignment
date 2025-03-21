@@ -22,13 +22,11 @@ const commonAttributes = {
     },
     isActive: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
+        allowNull: false
     },
     isDeleted: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: true
+        allowNull: false
     },
     updatedAt: {
         type: DataTypes.DATE,
@@ -36,7 +34,7 @@ const commonAttributes = {
     },
     updatedBy: {
         type: DataTypes.STRING(60),
-        allowNull: false
+        allowNull: true
     }
 }
 

@@ -24,4 +24,4 @@ const sequelize = new Sequelize('UserAuth', process.env.DB_USER, process.env.DB_
     }
 })();
 
-module.exports = sequelize;
+module.exports = {sequelize};

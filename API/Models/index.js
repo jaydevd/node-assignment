@@ -8,7 +8,11 @@
  * @author Jaydev Dwivedi (Zignuts)
  */
 const { User } = require('./User.js');
+const { Admin } = require('./Admin.js');
+const { Account } = require("./Account.js");
 
 module.exports = {
-    User
+    User,
+    Admin,
+    Account
 };

@@ -6,7 +6,12 @@
  * @author Jaydev Dwivedi (Zignuts)
  */
 const { UserAuthRoutes } = require('../Routes/UserAuthRoutes.js');
+const { AdminAuthRoutes } = require('../Routes/AdminAuthRoutes.js');
+const { UserRoutes } = require("./UserRoutes.js");
 
 module.exports = {
-    UserAuthRoutes
+    UserAuthRoutes,
+    AdminAuthRoutes,
+    AdminRoutes,
+    UserRoutes
 };

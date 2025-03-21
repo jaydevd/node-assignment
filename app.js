@@ -1,7 +1,7 @@
 const express = require('express');
 const { sequelize } = require('./API/Config/database.js');
 
-const { router } = require('./API/Routes/index.js');
+const { UserAuthRoutes, AdminAuthRoutes } = require('./API/Routes/index.js');
 require('dotenv/config.js');
 
 const app = express();
@@ -15,7 +15,8 @@ sequelize.sync().then(() => {
     console.error("Error syncing database:", err);
 });
 
-app.use('/', router);
+app.use('/user', UserAuthRoutes);
+app.use('/admin', AdminAuthRoutes);
 
 const PORT = process.env.PORT || 5000;
 

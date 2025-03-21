@@ -1,10 +1,10 @@
 /**
- * @name AuthRoutes
- * @file AuthRoutes.js
+ * @name UserRoutes
+ * @file UserRoutes.js
  * @param {Request} req
  * @param {Response} res
  * @throwsF
- * @description This method will manage user authentication routes.
+ * @description This method will manage user routes.
  * @author Jaydev Dwivedi (Zignuts)
  */
 
@@ -14,10 +14,7 @@ const { editProfile } = require('./../Controllers/UserController');
 const { isAuthenticated } = require("./../Middlewares/isAuthenticated");
 const router = express.Router();
 
-router.post('/user/signup', UserSignUp);
-router.get('/user/login', UserLogIn);
-router.route('/user/logout')
-    .post(isAuthenticated, UserLogOut);
+router.route('/user/edit_profile')
+    .post(isAuthenticated, editProfile);
 
-
-module.exports = { UserAuthRoutes: router };
+module.exports = { UserRoutes: router };
