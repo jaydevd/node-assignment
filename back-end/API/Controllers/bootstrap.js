@@ -46,10 +46,10 @@ const AdminSignUp = async (req, res) => {
             name: name,
             email: email,
             password: hashedPassword,
-            createdAt: Math.floor(Date.now() / 1000),
-            createdBy: id,
-            isActive: true,
-            isDeleted: false
+            created_by: id,
+            created_at: Math.floor(Date.now() / 1000),
+            is_active: true,
+            is_deleted: false
         });
 
         return res.status(200).json({
@@ -242,21 +242,23 @@ const DetailedView = async (req, res) => {
     }
 }
 
-const FilterByCountryCity = async (req, res) => {
+const FilterUsers = async (req, res) => {
     try {
         const { country, city } = req.params;
         const users = await User.findAll({
             where: {
-                country: { [Op.like]: `%${country.toLowerCase()}%` },
-                city: { [Op.like]: `%${city.toLowerCase()}%` }
+                country: { [Op.like]: `%${country.toLowerCase()}%` || '%%' },
+                city: { [Op.like]: `%${city.toLowerCase()}%` || '%%' }
             }
         });
+
         return res.status(200).json({
             status: '200',
             message: '',
             data: users,
             error: ''
-        })
+        });
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -303,6 +305,6 @@ module.exports = {
     AdminLogOut,
     SearchUsers,
     ListUsers,
-    FilterByCountryCity,
+    FilterUsers,
     DetailedView
 };

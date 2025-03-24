@@ -10,11 +10,9 @@
 const { User } = require('./User.js');
 const { Admin } = require('./Admin.js');
 const { Account } = require("./Account.js");
-const { Item } = require("./Item.js");
 
 module.exports = {
     User,
     Admin,
-    Account,
-    Item
+    Account
 };

@@ -7,11 +7,8 @@
  */
 const { UserAuthRoutes } = require('../Routes/UserAuthRoutes.js');
 const { AdminAuthRoutes } = require('../Routes/AdminAuthRoutes.js');
-const { UserRoutes } = require("./UserRoutes.js");
 
 module.exports = {
     UserAuthRoutes,
-    AdminAuthRoutes,
-    AdminRoutes,
-    UserRoutes
-};
+    AdminAuthRoutes
+}

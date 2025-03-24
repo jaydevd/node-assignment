@@ -12,7 +12,8 @@ const { v4: uuidv4 } = require('uuid');
 const Validator = require("validatorjs");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User } = require('../Models/index');
+const { User, Account } = require('../Models/index');
+const { HTTP_STATUS_CODES } = require('../Config/constants');
 
 const UserSignUp = async (req, res) => {
 
@@ -58,10 +59,15 @@ const UserSignUp = async (req, res) => {
             name: name,
             email: email,
             password: hashedPassword,
-            isActive: true,
-            isDeleted: false,
-            createdAt: Math.floor(Date.now() / 1000),
-            createdBy: id
+            age: age,
+            gender: gender,
+            country: country,
+            city: city,
+            company: company || null,
+            created_by: id,
+            created_at: Math.floor(Date.now() / 1000),
+            is_active: true,
+            is_deleted: false
         });
 
         return res.status(200).json({
@@ -89,7 +95,7 @@ const UserLogIn = async (req, res) => {
 
         const user = await User.findOne({
             where: { email: email },
-            attributes: ['id', 'name', 'email', 'password']
+            attributes: ['id', 'name', 'email', 'password', 'age', 'gender', 'country', 'city', 'company']
         });
 
         if (!user) {
@@ -120,9 +126,7 @@ const UserLogIn = async (req, res) => {
         const secretKey = process.env.SECRET_KEY;
 
         const token = jwt.sign({
-            id: user.id,
-            name: user.name,
-            email: user.email
+            id: user.id
         }, secretKey, { expiresIn: '1h' });
 
         // console.log("token:", token);
@@ -146,8 +150,8 @@ const UserLogIn = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            status: INTERNAL_SERVER_ERROR,
-            data: token,
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+            data: '',
             message: '',
             error: ''
         });
@@ -174,8 +178,8 @@ const UserLogOut = async (req, res) => {
 
         await User.update({ token: null }, { where: { id: user.id } });
 
-        return res.json({
-            status: '200',
+        return res.status(200).json({
+            status: HTTP_STATUS_CODES.SUCCESS,
             message: 'Logged out successfully',
             data: '',
             error: ''
@@ -185,7 +189,7 @@ const UserLogOut = async (req, res) => {
         console.log(error);
 
         return res.status(500).json({
-            status: INTERNAL_SERVER_ERROR,
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             message: '',
             data: '',
             error: error.message()
@@ -196,21 +200,24 @@ const UserLogOut = async (req, res) => {
 const EditProfile = async (req, res) => {
 
     try {
-        const { id, name, gender, country, city } = req.body;
+        const { id, name, gender, age, country, city, company } = req.body;
 
         let validation = new Validator({
             id: id,
             name: name,
             gender: gender,
             country: country,
-            city: city
+            city: city,
+            company: company
         },
             {
                 id: 'required',
                 name: 'required',
                 gender: 'required',
+                age: 'required',
                 country: 'required',
-                city: 'required'
+                city: 'required',
+                company: 'mxa:64'
             }
         )
 
@@ -223,16 +230,17 @@ const EditProfile = async (req, res) => {
             })
         }
 
-        const userId = uuidv4();
         const result = await User.update({
             name: name,
             gender: gender,
+            age: age,
             country: country,
-            city: city
-        }, { where: { id: userId } });
+            city: city,
+            company: company
+        }, { where: { id: id } });
 
         return res.status(200).json({
-            status: '200',
+            status: HTTP_STATUS_CODES.SUCCESS,
             data: result.id,
             message: 'Data Created Successfully',
             error: ''
@@ -249,76 +257,27 @@ const EditProfile = async (req, res) => {
     }
 }
 
-const ListAccounts = async (req, res) => {
+const SearchAccount = async (req, res) => {
     try {
-        const { id } = req.body;
-        const accounts = await Account.findAll({ attributes: ['name', 'category', 'subcategory'] }, { where: { user_id: id } });
+        const { query } = req.params;
 
-        if (!accounts) {
-            return res.status(400).json({
-                status: '400',
-                message: "",
-                data: '',
-                error: ""
-            })
-        }
+        const accounts = await Account.findAll({
+            attributes: ['name', 'category', 'sub_category'],
+        }, { where: { name: { [Op.like]: `%${query}%` } } });
+
         return res.status(200).json({
-            status: '200',
-            message: "",
+            status: HTTP_STATUS_CODES.SUCCESS,
+            message: '',
             data: accounts,
-            error: ""
-        });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            status: INTERNAL_SERVER_ERROR,
-            message: "",
-            data: account.id,
-            error: ""
-        });
-    }
-}
-
-const UpdateAccount = async (req, res) => {
-    try {
-        const { id, name, category, subcategory } = req.body;
-        const result = await Account.update({ name: name, category: category, subcategory: subcategory }, { where: { id: id } });
-        return res.status(200).json({
-            status: '200',
-            message: "",
-            data: result.id,
-            error: ""
-        });
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            status: INTERNAL_SERVER_ERROR,
-            message: "",
-            data: account.id,
-            error: ""
+            error: ''
         })
-    }
-}
-
-const DeleteAccount = async (req, res) => {
-    try {
-        const { id } = req.body;
-        const result = await Account.delete({ where: { id: id } });
-        return res.status(200).json({
-            status: '200',
-            message: "",
-            data: '',
-            error: ""
-        });
-
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            status: INTERNAL_SERVER_ERROR,
-            message: "",
-            data: account.id,
-            error: ""
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+            message: '',
+            data: '',
+            error: error.message()
         })
     }
 }
@@ -328,8 +287,5 @@ module.exports = {
     UserLogOut,
     UserSignUp,
     EditProfile,
-    CreateAccount,
-    ListAccounts,
-    UpdateAccount,
-    DeleteAccount
+    SearchAccount
 };
