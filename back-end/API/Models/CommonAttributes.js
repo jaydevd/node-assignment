@@ -11,28 +11,28 @@
 const { DataTypes } = require("sequelize");
 
 const commonAttributes = {
-    createdAt: {
+    created_at: {
         type: DataTypes.DATE,
         defaultValue: Math.floor(Date.now() / 1000),
         allowNull: false
     },
-    createdBy: {
+    created_by: {
         type: DataTypes.STRING(60),
         allowNull: false
     },
-    isActive: {
+    is_active: {
         type: DataTypes.BOOLEAN,
         allowNull: false
     },
-    isDeleted: {
+    is_deleted: {
         type: DataTypes.BOOLEAN,
         allowNull: false
     },
-    updatedAt: {
+    updated_at: {
         type: DataTypes.DATE,
         allowNull: true
     },
-    updatedBy: {
+    updated_by: {
         type: DataTypes.STRING(60),
         allowNull: true
     }
