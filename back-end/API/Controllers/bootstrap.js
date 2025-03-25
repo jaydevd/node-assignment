@@ -7,12 +7,17 @@
  * @description AdminSignUp method will create a new user, AdminLogIn method will log in an existing user and AdminLogOut method will log out the logged in user.
  * @author Jaydev Dwivedi (Zignuts)
  */
-const { Admin, User } = require("../Models/index");
+const { Admin, User } = require("./../Models/index");
 const { v4: uuidv4 } = require('uuid');
+const Validator = require('validatorjs');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { HTTP_STATUS_CODES } = require('./../Config/constants');
 
 const AdminSignUp = async (req, res) => {
 
     try {
+        // console.log("API Called!");
         const { name, email, gender, password } = req.body;
 
         let validation = new Validator({
@@ -45,6 +50,7 @@ const AdminSignUp = async (req, res) => {
             id: id,
             name: name,
             email: email,
+            gender: gender,
             password: hashedPassword,
             created_by: id,
             created_at: Math.floor(Date.now() / 1000),
@@ -76,19 +82,18 @@ const AdminLogIn = async (req, res) => {
         const { email, password } = req.body;
         // console.log(email, password);
 
-        const admin = await User.findOne({
+        const admin = await Admin.findOne({
             where: { email: email },
             attributes: ['id', 'name', 'email', 'password']
         });
 
         if (!admin) {
             return res.status(400).json({
-                status: PAGE_NOT_FOUND,
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
                 message: "Admin Not Found",
                 data: "",
                 error: ""
             });
-
         }
         // console.log("User: ", user.password);
         const isMatch = await bcrypt.compare(password, admin.password);
@@ -96,7 +101,7 @@ const AdminLogIn = async (req, res) => {
         // console.log('Comparison completed: ', isMatch);
         if (!isMatch) {
             return res.status(400).json({
-                status: PAGE_NOT_FOUND,
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
                 message: "Invalid Credentials",
                 data: "",
                 error: "Password doesn't match"
@@ -106,13 +111,11 @@ const AdminLogIn = async (req, res) => {
         // console.log("Password matched");
         const token = jwt.sign({
             id: admin.id,
-            name: admin.name,
-            email: admin.email
         }, process.env.SECRET_KEY, { expiresIn: '1h' });
 
         // console.log("token:", token);
 
-        await User.update(
+        await Admin.update(
             { token: token },
             {
                 where: {
@@ -131,7 +134,7 @@ const AdminLogIn = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            status: INTERNAL_SERVER_ERROR,
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             data: token,
             message: '',
             error: ''

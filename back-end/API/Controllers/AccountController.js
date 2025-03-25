@@ -12,7 +12,7 @@ const { v4: uuidv4 } = require('uuid');
 const Validator = require("validatorjs");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User, Account, Item } = require('../Models/index');
+const { User, Account } = require('../Models/index');
 const { HTTP_STATUS_CODES } = require('../Config/constants');
 
 const CreateAccount = async (req, res) => {
