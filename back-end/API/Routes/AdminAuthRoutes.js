@@ -14,7 +14,7 @@ const isAdminAuthenticated = require('../Middlewares/isAdminAuthenticated');
 const router = express.Router();
 
 router.post('/signup', AdminSignUp);
-router.get('/login', AdminLogIn);
+router.post('/login', AdminLogIn);
 
 router.route('/logout')
     .all(isAdminAuthenticated)

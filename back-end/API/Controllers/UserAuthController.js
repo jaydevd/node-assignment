@@ -31,20 +31,20 @@ const UserSignUp = async (req, res) => {
             company: company
         },
             {
-                name: ['required', 'max:30'],
-                email: 'required',
-                password: 'required',
-                age: 'required',
-                gender: 'required',
-                country: 'required',
-                city: 'required',
-                company: 'max:64'
+                name: ["required", "max:30"],
+                email: ["required", "email"],
+                password: "required",
+                age: "required",
+                gender: "required",
+                country: "required",
+                city: "required",
+                company: "max:64"
             }
         )
 
         if (validation.fails()) {
             return res.status(400).json({
-                status: PAGE_NOT_FOUND,
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
                 data: '',
                 message: 'Invalid Credentials',
                 error: validation.errors.all()
@@ -71,7 +71,7 @@ const UserSignUp = async (req, res) => {
         });
 
         return res.status(200).json({
-            status: '200',
+            status: HTTP_STATUS_CODES.SUCCESS,
             data: result.id,
             message: 'Data Created Successfully',
             error: ''
@@ -81,10 +81,10 @@ const UserSignUp = async (req, res) => {
         console.log(error);
 
         return res.status(500).json({
-            status: 500,
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             data: '',
             message: '',
-            error: error.message()
+            error: error.message
         })
     }
 }

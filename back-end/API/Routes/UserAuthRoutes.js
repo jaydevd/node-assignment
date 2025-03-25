@@ -14,38 +14,38 @@ const { CreateAccount, UpdateAccount, DeleteAccount, ListAccounts, FilterAccount
 const isUserAuthenticated = require("../Middlewares/isUserAuthenticated");
 const router = express.Router();
 
-router.post('/user/signup', UserSignUp);
-router.get('/user/login', UserLogIn);
+router.post('/signup', UserSignUp);
+router.post('/login', UserLogIn);
 
-router.route('/user/logout')
+router.route('/logout')
     .all(isUserAuthenticated)
     .post(UserLogOut);
 
-router.route('/user/EditProfile')
+router.route('/EditProfile')
     .all(isUserAuthenticated)
     .post(EditProfile);
 
-router.route('/user/ListAccounts')
+router.route('/ListAccounts')
     .all(isUserAuthenticated)
     .get(ListAccounts);
 
-router.route('/user/CreateAccount')
+router.route('/CreateAccount')
     .all(isUserAuthenticated)
     .post(CreateAccount);
 
-router.route('/user/UpdateAccount')
+router.route('/UpdateAccount')
     .all(isUserAuthenticated)
     .post(UpdateAccount);
 
-router.route('/user/DeleteAccount')
+router.route('/DeleteAccount')
     .all(isUserAuthenticated)
     .get(DeleteAccount);
 
-router.route('/user/SearchAccount')
+router.route('/SearchAccount')
     .all(isUserAuthenticated)
     .get(SearchAccount);
 
-router.route('/user/FilterAccounts')
+router.route('/FilterAccounts')
     .all(isUserAuthenticated)
     .get(FilterAccounts);
 

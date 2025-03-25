@@ -1,10 +1,11 @@
+import getUsers from "../../Hooks/Admin/getUsers";
 import Navbar from "../Navbar";
 
 const UserDashboard = () => {
     const users = getUsers();
     return (
         <>
-            <Navbar />
+            <Navbar title="User Dashboard" />
             <div className="h-screen w-full flex justify-center items-center">
                 <div className="w-2/12 bg-gray-900/70 h-screen">
                     <div className="w-8/12 flex flex-col gap-3 ml-10 m-10">

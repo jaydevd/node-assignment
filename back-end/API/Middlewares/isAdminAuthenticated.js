@@ -18,11 +18,11 @@ const isAdminAuthenticated = async (req, res, next) => {
   try {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-    console.log(token);
+    // console.log(token);
 
     if (!token) {
       return res.status(400).json({
-        status: PAGE_NOT_FOUND,
+        status: HTTP_STATUS_CODES.CLIENT_ERROR,
         message: '',
         data: '',
         error: 'Invalid Token'
@@ -64,7 +64,7 @@ const isAdminAuthenticated = async (req, res, next) => {
       });
     }
 
-    if (!user.isActive) {
+    if (!user.is_active) {
       return res.status(400).json({
         status: '400',
         message: '',

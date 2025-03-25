@@ -36,7 +36,7 @@ const AdminSignUp = async (req, res) => {
 
         if (validation.fails()) {
             return res.status(400).json({
-                status: PAGE_NOT_FOUND,
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
                 data: '',
                 message: 'Invalid Values',
                 error: validation.errors.all()
@@ -59,7 +59,7 @@ const AdminSignUp = async (req, res) => {
         });
 
         return res.status(200).json({
-            status: '200',
+            status: HTTP_STATUS_CODES.SUCCESS,
             data: result.id,
             message: 'Data Created Successfully',
             error: ''
@@ -69,7 +69,7 @@ const AdminSignUp = async (req, res) => {
         console.log(error);
 
         return res.status(500).json({
-            status: 500,
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             data: '',
             message: '',
             error: error.message()
@@ -135,19 +135,19 @@ const AdminLogIn = async (req, res) => {
         console.log(error);
         return res.status(500).json({
             status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-            data: token,
+            data: '',
             message: '',
-            error: ''
+            error: error.message
         });
     }
 }
 
 const AdminLogOut = async (req, res) => {
     try {
-
+        const { token } = req.body;
         if (!token) {
             res.status(400).json({
-                status: '400',
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
                 message: 'No token found',
                 data: '',
                 error: ''
@@ -161,7 +161,7 @@ const AdminLogOut = async (req, res) => {
 
         if ((token !== admin.token)) {
             return res.status(400).json({
-                status: '400',
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
                 message: 'No user found',
                 data: '',
                 error: ''
@@ -180,7 +180,7 @@ const AdminLogOut = async (req, res) => {
         console.log(error);
 
         return res.status(500).json({
-            status: INTERNAL_SERVER_ERROR,
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             message: '',
             data: '',
             error: error.message()
@@ -190,21 +190,24 @@ const AdminLogOut = async (req, res) => {
 
 const ListUsers = async (req, res) => {
     try {
-        const { limit, page } = req.params;
-        const skip = page * limit - 1;
+        const { page } = req.query;
+        const limit = 20;
+        const skip = (page - 1) * limit;
+        console.log(skip);
 
-        const users = User.findAll({
-            attributes: ['name', 'email', 'age', 'gender', 'country', 'city', 'company']
+        const users = await User.findAll({
+            attributes: ['name', 'email']
         }, { offset: skip, limit: limit });
 
         if (!users) {
             return res.status(400).json({
-                status: '400',
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
                 message: 'No users found',
                 data: '',
                 error: ''
             });
         }
+        // console.log(users);
         return res.status(200).json({
             status: '200',
             message: '',
@@ -215,7 +218,7 @@ const ListUsers = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            status: INTERNAL_SERVER_ERROR,
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             message: '',
             data: '',
             error: error.message()
@@ -237,7 +240,7 @@ const DetailedView = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            status: INTERNAL_SERVER_ERROR,
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             message: '',
             data: '',
             error: error.message()
@@ -247,7 +250,7 @@ const DetailedView = async (req, res) => {
 
 const FilterUsers = async (req, res) => {
     try {
-        const { country, city } = req.params;
+        const { country, city } = req.query;
         const users = await User.findAll({
             where: {
                 country: { [Op.like]: `%${country.toLowerCase()}%` || '%%' },
@@ -256,7 +259,7 @@ const FilterUsers = async (req, res) => {
         });
 
         return res.status(200).json({
-            status: '200',
+            status: HTTP_STATUS_CODES.SUCCESS,
             message: '',
             data: users,
             error: ''
@@ -265,10 +268,10 @@ const FilterUsers = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            status: INTERNAL_SERVER_ERROR,
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             message: '',
             data: '',
-            error: error.message()
+            error: error.message
         })
     }
 }
@@ -297,7 +300,7 @@ const SearchUsers = async (req, res) => {
             status: INTERNAL_SERVER_ERROR,
             message: '',
             data: '',
-            error: error.message()
+            error: error.message
         })
     }
 }

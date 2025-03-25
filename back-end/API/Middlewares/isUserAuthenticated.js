@@ -13,12 +13,12 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../Models/index.js');
 const { HTTP_STATUS_CODES } = require('../Config/constants.js');
 
-async function isUserAuthenticated(req, res, next) {
+const isUserAuthenticated = async (req, res, next) => {
 
     try {
         const authHeader = req.headers['authorization'];
         const token = authHeader && authHeader.split(' ')[1];
-        console.log(token);
+        // console.log(token);
 
         if (!token) {
             return res.status(400).json({
@@ -30,7 +30,7 @@ async function isUserAuthenticated(req, res, next) {
         }
 
         // Verify JWT
-        const payload = await jwt.verify(token, process.env.SECRET_KEY);
+        const payload = jwt.verify(token, process.env.SECRET_KEY);
 
         if (!payload) {
             return res.status(400).json({
