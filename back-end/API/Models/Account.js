@@ -24,7 +24,7 @@ const Account = sequelize.define("Account", {
         allowNull: false,
         unique: true
     },
-    subCategory: {
+    sub_category: {
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: false

@@ -11,42 +11,42 @@
 const express = require("express");
 const { UserLogIn, UserLogOut, UserSignUp, EditProfile, SearchAccount } = require('./../Controllers/UserAuthController');
 const { CreateAccount, UpdateAccount, DeleteAccount, ListAccounts, FilterAccounts } = require('./../Controllers/AccountController');
-const isAuthenticated = require("./../Middlewares/isAuthenticated");
+const isUserAuthenticated = require("../Middlewares/isUserAuthenticated");
 const router = express.Router();
 
 router.post('/user/signup', UserSignUp);
 router.get('/user/login', UserLogIn);
 
 router.route('/user/logout')
-    .all(isAuthenticated)
+    .all(isUserAuthenticated)
     .post(UserLogOut);
 
 router.route('/user/EditProfile')
-    .all(isAuthenticated)
+    .all(isUserAuthenticated)
     .post(EditProfile);
 
 router.route('/user/ListAccounts')
-    .all(isAuthenticated)
+    .all(isUserAuthenticated)
     .get(ListAccounts);
 
 router.route('/user/CreateAccount')
-    .all(isAuthenticated)
+    .all(isUserAuthenticated)
     .post(CreateAccount);
 
 router.route('/user/UpdateAccount')
-    .all(isAuthenticated)
+    .all(isUserAuthenticated)
     .post(UpdateAccount);
 
 router.route('/user/DeleteAccount')
-    .all(isAuthenticated)
+    .all(isUserAuthenticated)
     .get(DeleteAccount);
 
 router.route('/user/SearchAccount')
-    .all(isAuthenticated)
+    .all(isUserAuthenticated)
     .get(SearchAccount);
 
 router.route('/user/FilterAccounts')
-    .all(isAuthenticated)
+    .all(isUserAuthenticated)
     .get(FilterAccounts);
 
 module.exports = { UserAuthRoutes: router };

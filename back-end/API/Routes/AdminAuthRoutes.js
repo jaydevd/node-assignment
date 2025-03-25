@@ -10,26 +10,26 @@
 
 const express = require("express");
 const { AdminLogIn, AdminLogOut, AdminSignUp, ListUsers, FilterUsers, SearchUsers } = require('../Controllers/bootstrap');
-const isAuthenticated = require('./../Middlewares/isAuthenticated');
+const isAdminAuthenticated = require('../Middlewares/isAdminAuthenticated');
 const router = express.Router();
 
-router.post('/admin/signup', AdminSignUp);
-router.get('/admin/login', AdminLogIn);
+router.post('/signup', AdminSignUp);
+router.get('/login', AdminLogIn);
 
-router.route('/admin/logout')
-    .all(isAuthenticated)
+router.route('/logout')
+    .all(isAdminAuthenticated)
     .post(AdminLogOut);
 
-router.route('/admin/ListUsers')
-    .all(isAuthenticated)
+router.route('/ListUsers')
+    .all(isAdminAuthenticated)
     .get(ListUsers);
 
-router.route('/admin/FilterUsers')
-    .all(isAuthenticated)
+router.route('/FilterUsers')
+    .all(isAdminAuthenticated)
     .get(FilterUsers);
 
-router.route('/admin/SearchUsers')
-    .all(isAuthenticated)
+router.route('/SearchUsers')
+    .all(isAdminAuthenticated)
     .get(SearchUsers);
 
 module.exports = { AdminAuthRoutes: router };
