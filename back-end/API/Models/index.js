@@ -10,9 +10,13 @@
 const { User } = require('./User.js');
 const { Admin } = require('./Admin.js');
 const { Account } = require("./Account.js");
+const { CountriesCities } = require("./CountriesCities.js");
+const { Categories } = require("./Categories.js");
 
 module.exports = {
     User,
     Admin,
-    Account
+    Account,
+    CountriesCities,
+    Categories
 };

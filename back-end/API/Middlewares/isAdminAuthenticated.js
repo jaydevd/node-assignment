@@ -18,7 +18,7 @@ const isAdminAuthenticated = async (req, res, next) => {
   try {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-    // console.log(token);
+    console.log("token from isAdminAuthenticated: ", token);
 
     if (!token) {
       return res.status(400).json({
@@ -31,8 +31,10 @@ const isAdminAuthenticated = async (req, res, next) => {
 
     // Verify JWT
     const payload = jwt.verify(token, process.env.SECRET_KEY);
+    console.log("payload: ", payload);
 
     if (!payload) {
+      console.log("payload not found");
       return res.status(400).json({
         status: HTTP_STATUS_CODES.CLIENT_ERROR,
         message: '',
@@ -41,12 +43,12 @@ const isAdminAuthenticated = async (req, res, next) => {
       })
     }
 
-    const user = await Admin.findOne({
+    const admin = await Admin.findOne({
       where: { id: payload.id },
       attributes: ['id', 'name', 'email', 'token', 'is_active']
     });
 
-    if (!user.id) {
+    if (!admin.id) {
       return res.status(400).json({
         status: '400',
         message: '',
@@ -55,7 +57,7 @@ const isAdminAuthenticated = async (req, res, next) => {
       });
     }
 
-    if (token !== user.token) {
+    if (token !== admin.token) {
       return res.status(400).json({
         status: '400',
         message: '',
@@ -64,25 +66,27 @@ const isAdminAuthenticated = async (req, res, next) => {
       });
     }
 
-    if (!user.is_active) {
+    if (!admin.is_active) {
       return res.status(400).json({
         status: '400',
         message: '',
-        error: 'User is not active',
+        error: 'Admin is not active',
         data: ''
       });
     }
-    req.user = user;
+    req.body.admin = admin;
+    console.log("admin authenticated");
+
     next();
-  }
-  catch (error) {
+
+  } catch (error) {
+
     console.log(error);
     return res.status(500).json({
       status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
       message: '',
       data: '',
       error: error.message
-      ,
     });
   }
 }

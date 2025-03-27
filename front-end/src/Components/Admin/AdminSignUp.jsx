@@ -20,15 +20,10 @@ const AdminSignUp = () => {
         e.preventDefault();
         try {
             const res = await axios.post('http://localhost:5000/admin/signup', formData);
-
-            console.log('User Registered:', res);
             navigate("/admin/dashboard");
-            alert('Sign up successful!');
 
         } catch (err) {
             console.log(err);
-            console.error(err.response?.data?.message || 'Error signing up');
-            alert(err.response?.data?.message || 'Error signing up');
         }
     };
 

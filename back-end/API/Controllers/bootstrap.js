@@ -7,12 +7,13 @@
  * @description AdminSignUp method will create a new user, AdminLogIn method will log in an existing user and AdminLogOut method will log out the logged in user.
  * @author Jaydev Dwivedi (Zignuts)
  */
-const { Admin, User } = require("./../Models/index");
+const { Admin, User, CountriesCities, Categories } = require("./../Models/index");
 const { v4: uuidv4 } = require('uuid');
 const Validator = require('validatorjs');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { HTTP_STATUS_CODES } = require('./../Config/constants');
+const { Sequelize, Op } = require('sequelize');
 
 const AdminSignUp = async (req, res) => {
 
@@ -144,7 +145,12 @@ const AdminLogIn = async (req, res) => {
 
 const AdminLogOut = async (req, res) => {
     try {
-        const { token } = req.body;
+        console.log("Log Out API");
+        const reqAdmin = req.body.admin;
+        const token = reqAdmin.token;
+        console.log("log out admin: ", reqAdmin);
+        console.log("log out token: ", token);
+
         if (!token) {
             res.status(400).json({
                 status: HTTP_STATUS_CODES.CLIENT_ERROR,
@@ -170,7 +176,7 @@ const AdminLogOut = async (req, res) => {
         await Admin.update({ token: null }, { where: { id: admin.id } });
 
         return res.status(200).json({
-            status: '200',
+            status: HTTP_STATUS_CODES.SUCCESS,
             message: 'Logged out successfully',
             data: '',
             error: ''
@@ -183,7 +189,7 @@ const AdminLogOut = async (req, res) => {
             status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             message: '',
             data: '',
-            error: error.message()
+            error: error.message
         })
     }
 }
@@ -196,7 +202,7 @@ const ListUsers = async (req, res) => {
         console.log(skip);
 
         const users = await User.findAll({
-            attributes: ['name', 'email']
+            attributes: ['id', 'name', 'email', 'country', 'city', 'gender', 'age', 'company']
         }, { offset: skip, limit: limit });
 
         if (!users) {
@@ -226,36 +232,17 @@ const ListUsers = async (req, res) => {
     }
 }
 
-const DetailedView = async (req, res) => {
+const SearchUsers = async (req, res) => {
     try {
-        const { id } = req.body;
-        const user = await User.findOne({ attributes: ['name', 'email', 'country', 'city', 'company'] }, { where: { id: id } });
+        let query = req.query["query"];
+        console.log(query);
+        query = query.toLowerCase();
 
-        return res.status(200).json({
-            status: '200',
-            message: '',
-            data: user,
-            error: ''
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-            message: '',
-            data: '',
-            error: error.message()
-        })
-    }
-}
-
-const FilterUsers = async (req, res) => {
-    try {
-        const { country, city } = req.query;
         const users = await User.findAll({
             where: {
-                country: { [Op.like]: `%${country.toLowerCase()}%` || '%%' },
-                city: { [Op.like]: `%${city.toLowerCase()}%` || '%%' }
-            }
+                [Op.or]: [{ name: { [Op.iLike]: `%${query}%` } }, { email: { [Op.iLike]: `%${query}%` } }]
+            },
+            attributes: ['id', 'name', 'email', 'age', 'gender', 'country', 'city', 'company']
         });
 
         return res.status(200).json({
@@ -263,8 +250,33 @@ const FilterUsers = async (req, res) => {
             message: '',
             data: users,
             error: ''
+        })
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+            message: '',
+            data: '',
+            error: error.message
+        })
+    }
+}
+
+const GetCountries = async (req, res) => {
+    try {
+        // console.log("get coutries backend");
+        const countries = await CountriesCities.findAll({
+            attributes: ['country', 'city']
         });
 
+        // console.log(countries);
+        return res.status(200).json({
+            status: HTTP_STATUS_CODES.SUCCESS,
+            message: '',
+            data: countries,
+            error: ''
+        })
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -276,28 +288,60 @@ const FilterUsers = async (req, res) => {
     }
 }
 
-const SearchUsers = async (req, res) => {
+const EditUser = async (req, res) => {
     try {
-        const { query } = req.params;
+        const { id, name, country, city, gender, age, company } = req.body;
 
-        const users = User.findAll({
-            where: {
-                name: { [Op.like]: `%${query.toLowerCase()}%` },
-                email: { [Op.like]: `%${query.toLowerCase()}%` }
-            },
-            attributes: ['name', 'email', 'age', 'gender', 'country', 'city', 'company']
+        let validation = new Validator({
+            id: id,
+            name: name,
+            gender: gender,
+            country: country,
+            city: city,
+            gender: gender,
+            age: age,
+            company: company
+        },
+            {
+                id: 'required',
+                name: 'required',
+                gender: 'required',
+                country: 'required',
+                city: 'required',
+                gender: 'required',
+                age: 'required',
+                company: 'max:64'
+            }
+        )
+
+        if (validation.fails()) {
+            return res.status(400).json({
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
+                message: '',
+                data: '',
+                error: ''
+            })
+        }
+        const result = await User.update({
+            name: name,
+            country: country,
+            city: city,
+            gender: gender,
+            age: age,
+            company: company || null
+        }, {
+            where: { id: id }
         })
         return res.status(200).json({
-            status: '200',
+            status: HTTP_STATUS_CODES.SUCCESS,
             message: '',
-            data: users,
+            data: result,
             error: ''
         })
     } catch (error) {
         console.log(error);
-
         return res.status(500).json({
-            status: INTERNAL_SERVER_ERROR,
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             message: '',
             data: '',
             error: error.message
@@ -305,12 +349,43 @@ const SearchUsers = async (req, res) => {
     }
 }
 
+const DeleteUser = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        if (!id) {
+            return res.status(400).json({
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
+                message: '',
+                data: '',
+                error: ''
+            })
+        }
+        const result = await User.destroy({ where: { id: id } });
+
+        return res.status(200).json({
+            status: HTTP_STATUS_CODES.SUCCESS,
+            message: '',
+            data: '',
+            error: ''
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+            message: '',
+            data: '',
+            error: error.message
+        })
+    }
+}
 module.exports = {
     AdminLogIn,
     AdminSignUp,
     AdminLogOut,
     SearchUsers,
     ListUsers,
-    FilterUsers,
-    DetailedView
+    GetCountries,
+    EditUser,
+    DeleteUser
 };

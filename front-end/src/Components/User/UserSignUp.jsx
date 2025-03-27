@@ -24,13 +24,8 @@ const UserSignUp = () => {
 
         try {
             const res = await axios.post('http://localhost:5000/user/signup', formData);
-
-            console.log('User Registered:', res);
-            alert('Sign up successful!');
         } catch (err) {
             console.log(err);
-            console.error(err.response?.data?.message || 'Error signing up');
-            alert(err.response?.data?.message || 'Error signing up');
         }
     };
 

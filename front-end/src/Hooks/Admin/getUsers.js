@@ -1,22 +1,33 @@
 import axios from 'axios';
 import { useEffect, useState } from "react";
+
 const getUsers = async () => {
+    const [users, setUsers] = useState([]);
     try {
-        const [users, setUsers] = useState([]);
+
         useEffect(() => {
             const fetchAPI = async () => {
                 try {
-                    
-                    const res = await axios.get('http://localhost:5000/admin/ListUsers?page=1', { 'headers': { 'Authorization': `Bearer ${token}` } });
-                    console.log(res);
-                    setUsers(res);
-                    return users.json();
+
+                    const token = localStorage.getItem("token");
+
+                    axios.get('http://localhost:5000/admin/ListUsers?page=1', { 'headers': { 'Authorization': `Bearer ${token}` } })
+                        .then(res => {
+                            setUsers(res.data.data);
+                            return users;
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
                 } catch (error) {
                     console.log(error);
                 }
             }
             fetchAPI();
         }, []);
+
+        return users;
+
     } catch (error) {
         console.log(error.message);
     }

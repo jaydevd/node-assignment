@@ -5,6 +5,7 @@ import App from "./App";
 import AdminDashboard from './Components/Admin/AdminDashboard';
 import AdminLogIn from './Components/Admin/AdminLogIn';
 import AdminSignUp from './Components/Admin/AdminSignUp';
+import UserDetails from "./Components/Admin/UserDetails";
 import UserDashboard from './Components/User/UserDashboard';
 import UserLogIn from './Components/User/UserLogIn';
 import UserSignUp from './Components/User/UserSignUp';
@@ -25,6 +26,7 @@ ReactDOM.createRoot(root).render(
         <Route path="/admin/login" element={<AdminLogIn />} />
         <Route path="/admin/signup" element={<AdminSignUp />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/DetailedView" element={<UserDetails />} />
       </Route>
     </Routes>
   </BrowserRouter>

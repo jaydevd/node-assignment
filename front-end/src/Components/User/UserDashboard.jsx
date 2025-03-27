@@ -1,56 +1,82 @@
-import getUsers from "../../Hooks/Admin/getUsers";
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 import Navbar from "../Navbar";
+import Categories from "./Categories";
+import Countries from "./Countries";
+import UserListView from "./UserListView";
 
-const UserDashboard = () => {
-    const users = getUsers();
+const AdminDashboard = () => {
+    const [showUsers, setShowUsers] = useState(false);
+    const [showCountries, setShowCountries] = useState(false);
+    const [showCategories, setShowCategories] = useState(true);
+    const navigate = useNavigate();
+
+    const handleUsersView = () => {
+        setShowUsers(!showUsers);
+        setShowCountries(!showCountries);
+    }
+
+    const handleCountriesView = () => {
+        setShowUsers(!showUsers);
+        setShowCountries(!showCountries);
+    }
+
+    const handleCategoriesView = () => {
+        setShowUsers(!showUsers);
+        setShowCategories(!showCategories);
+    }
+
+    const handleLogOut = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            const res = await axios.post('http://localhost:5000/admin/logout', token, {
+                'headers': {
+                    'authorization': `Bearer ${token}`
+                }
+            });
+            localStorage.removeItem("token");
+            navigate("/admin/login");
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <>
-            <Navbar title="User Dashboard" />
-            <div className="h-screen w-full flex justify-center items-center">
-                <div className="w-2/12 bg-gray-900/70 h-screen">
-                    <div className="w-8/12 flex flex-col gap-3 ml-10 m-10">
-                        <a href="/admin/listUsers" className="text-sky-400 hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200">Home</a>
-                        <a href="/admin/listUsers" className="text-white hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200">Users list</a>
-                        <a href="/admin/listUsers" className="text-white hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200">Countries and Cities</a>
-                        <a href="/admin/categories" className="text-white hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200">Categories and sub categories</a>
-                    </div>
-                </div>
-                <div className="w-10/12 bg-neutral-300 h-screen">
-                    <div className="flex justify-center items-center my-2">
-                        <button type="button" data-collapse-toggle="navbar-search" aria-controls="navbar-search" aria-expanded="false" className="md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 me-1">
-                            <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                            </svg>
-                            <span className="sr-only">Search</span>
-                        </button>
-                        <div className="relative hidden md:block">
-                            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                </svg>
-                                <span className="sr-only">Search icon</span>
-                            </div>
-                            <input type="text" id="search-navbar" className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search..." />
-                        </div>
-                        <button data-collapse-toggle="navbar-search" type="button" className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-search" aria-expanded="false">
-                            <span className="sr-only">Open main menu</span>
-                            <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h15M1 7h15M1 13h15" />
-                            </svg>
-                        </button>
-                    </div>
-                    <ul>
-                        {
-                            users.map((user) => {
-                                let id = uuidv4();
-                                <li key={id}>user.name</li>
-                            })
-                        }
+            <Navbar title="Admin Dashboard" />
+            <div className="h-screen w-full flex justify-center">
+                <div className="h-[85vh] relative w-2/12 bg-gray-700">
+                    <ul className="w-8/12 flex flex-col gap-3 ml-10 m-10">
+                        <li className="text-sky-400 hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200 cursor-pointer"
+                            onClick={handleUsersView}>Users List View</li>
+                        <li className="text-white hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200 cursor-pointer"
+                            onClick={handleCountriesView}>Countries / Cities</li>
+                        <li className="text-white hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200 cursor-pointer"
+                            onClick={handleCategoriesView}
+                        >Categories / Sub categories</li>
                     </ul>
+                    <button className="w-8/12 ml-10 m-10 absolute bottom-10 text-amber-700 hover:bg-red-400/30 cursor-pointer px-4 py-2 rounded-md" onClick={handleLogOut}>Log Out </button>
                 </div>
-            </div>
+                <div className="w-10/12 bg-neutral-200 h-screen">
+                    {
+                        showUsers &&
+                        <UserListView />
+                    }
+                    {
+                        showCategories &&
+                        <Categories />
+                    }
+                    {
+                        showCountries &&
+                        <Countries />
+                    }
+                </div>
+            </div >
         </>
     )
 }
 
-export default UserDashboard;
+export default AdminDashboard;

@@ -1,44 +1,129 @@
+import axios from 'axios';
+import { debounce } from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
+import ReactPaginate from 'react-paginate';
+import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-const UserListView = ({ users }) => {
+import getCountries from '../../Hooks/Admin/getCountries';
+import getUsers from './../../Hooks/Admin/getUsers';
+
+const UserListView = () => {
+    const [users, setUsers] = useState([]);
+    const [country, setCountry] = useState("All");
+    const [search, setSearch] = useState("");
+    const [countries, setCountries] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    const navigate = useNavigate();
+
+    getUsers().then(data => setUsers(data));
+    getCountries().then(data => setCountries(data));
+    // console.log(countries);
+
+    useEffect(() => {
+        const fetchData = async () => {
+
+            const res = await axios.get("http://localhost:5000/admin/SearchUsers", {
+                params: { query: search }
+            });
+            // console.log(res);
+            setUsers(res.data.data);
+            console.log(users);
+        }
+        fetchData();
+    }, [search]);
+
+
+    const fetchSearchedUsers = async (query) => {
+        try {
+            const res = await axios.get("http://localhost:5000/admin/SearchUsers", {
+                params: { query }
+            });
+            setFilteredUsers(res.data.data);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    };
+
+    const debouncedSearch = useCallback(debounce(fetchSearchedUsers, 500), []);
+
+    useEffect(() => {
+        if (search.trim() === "") {
+            setFilteredUsers(users); // Reset to all users when search is empty
+        } else {
+            debouncedSearch(search);
+        }
+    }, [search, users]);
+
+    const onChange = (e) => {
+        setCountry(e.target.value);
+    };
+
+    const onSearchChange = (e) => {
+        setSearch(e.target.value);
+    }
+
+    useEffect(() => {
+        if (country === "All") {
+            setFilteredUsers(users);
+        } else {
+            setFilteredUsers(users.filter(user => user.country === country));
+        }
+    }, [country, users]);
+
+    const pageCount = Math.ceil(filteredUsers.length / 5);
+    const handlePageClick = ({ selected }) => setCurrentPage(selected);
+    const paginatedData = filteredUsers.slice(currentPage * 5, (currentPage + 1) * 5);
+
     return (
         <>
-            <div className="flex justify-center items-center my-2">
-                <button type="button" data-collapse-toggle="navbar-search" aria-controls="navbar-search" aria-expanded="false" className="md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 me-1">
-                    <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                    </svg>
-                    <span className="sr-only">Search</span>
-                </button>
-                <div className="relative hidden md:block w-96">
-                    <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                        <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                        </svg>
-                        <span className="sr-only">Search icon</span>
-                    </div>
-                    <input type="text" id="search-navbar" className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search..." />
+            <div className="flex justify-center items-center flex-col my-2 gap-2">
+                <form onSubmit={(e) => e.preventDefault()} className="relative hidden md:block w-96">
+                    <input type="text" id="search-navbar" className="block w-full p-2 ps-5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search by name or email" value={search} onChange={onSearchChange} />
+                    <button className="hidden" type='submit'>Submit</button>
+                </form>
+                <select
+                    name="filter-btn"
+                    id="filter-btn"
+                    className="w-fit h-fit border-none text-black bg-gray-300 rounded-md py-2 pl-2 cursor-pointer"
+                    value={country}
+                    onChange={onChange}
+                >
+                    <option value="All">All Countries</option>
+                    {countries.map((data) => (
+                        <option key={uuidv4()} value={data.country}>
+                            {data.country}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div className="h-screen w-full mt-5 flex flex-col items-center">
+                <div className="h-fit w-9/12 flex flex-col gap-1">
+                    {paginatedData.map((user) => (
+                        <ul key={uuidv4()} onClick={() => navigate(`/admin/DetailedView`, { state: user })} className="bg-neutral-300 rounded-md p-5 mx-3 hover:bg-neutral-400/40 duration-200 cursor-pointer">
+                            <li>{user.name}</li>
+                            <li>{user.email}</li>
+                        </ul>
+                    ))}
                 </div>
-                <button data-collapse-toggle="navbar-search" type="button" className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-search" aria-expanded="false">
-                    <span className="sr-only">Open main menu</span>
-                    <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h15M1 7h15M1 13h15" />
-                    </svg>
-                </button>
-            </div>
-            <div className="h-screen mt-5">
-                <ul>
-                    {
-                        Array.from(users).map((user) => {
-                            <>
-                                <li key={uuidv4()}>{user.name}</li>
-                                <li>{user.email}</li>
-                            </>
-                        })
-                    }
-                </ul>
-            </div>
+                {pageCount > 1 && (
+                    <div className="flex">
+                        <ReactPaginate
+                            previousLabel={"← Previous"}
+                            nextLabel={"Next →"}
+                            breakLabel={"..."}
+                            pageCount={pageCount}
+                            marginPagesDisplayed={2}
+                            pageRangeDisplayed={3}
+                            onPageChange={handlePageClick}
+                            containerClassName={"pagination"}
+                            activeClassName={"active"}
+                        />
+                    </div>
+                )}
+            </div >
         </>
-
     )
 }
+
 export default UserListView;

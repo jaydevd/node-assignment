@@ -19,15 +19,10 @@ const UserLogIn = () => {
         e.preventDefault();
         try {
             const res = await axios.post('http://localhost:5000/user/login', formData);
-
-            console.log('User Logged in:', res);
-            alert('Log in successful!');
             navigate("/user/dashboard");
 
         } catch (err) {
             console.log(err);
-            console.error(err.response?.data?.message || 'Error logging in');
-            alert(err.response?.data?.message || 'Error logging in');
         }
     };
     return (
@@ -48,6 +43,7 @@ const UserLogIn = () => {
                     </div>
                 </form>
             </div>
+            <p>Don't have account? <a href="/user/signup" className="text-blue-600 underline">Create account</a></p>
         </div>
     )
 }
