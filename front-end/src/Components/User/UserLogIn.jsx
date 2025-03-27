@@ -19,7 +19,8 @@ const UserLogIn = () => {
         e.preventDefault();
         try {
             const res = await axios.post('http://localhost:5000/user/login', formData);
-            navigate("/user/dashboard");
+            navigate("/user/dashboard", { state: res.data.data });
+            // console.log("log in data: ", res.data.data);
 
         } catch (err) {
             console.log(err);

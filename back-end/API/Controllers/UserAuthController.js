@@ -100,7 +100,7 @@ const UserLogIn = async (req, res) => {
 
         if (!user) {
             return res.status(400).json({
-                status: PAGE_NOT_FOUND,
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
                 message: "User Not Found",
                 data: "",
                 error: ""
@@ -143,7 +143,7 @@ const UserLogIn = async (req, res) => {
 
         return res.status(200).json({
             status: HTTP_STATUS_CODES.SUCCESS,
-            data: token,
+            data: user,
             message: '',
             error: ''
         });

@@ -22,7 +22,7 @@ const isUserAuthenticated = async (req, res, next) => {
 
         if (!token) {
             return res.status(400).json({
-                status: PAGE_NOT_FOUND,
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
                 message: '',
                 data: '',
                 error: 'Invalid Token'

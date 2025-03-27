@@ -15,10 +15,6 @@ const Countries = () => {
     });
 
     getCountries().then(data => setCountries(data));
-    // console.log(countries);
-    // setCountries(data);
-    // getCountries.then(data => setCountries(data));
-    // console.log(countries);
 
     const onCountryChange = (e) => {
         setCountry(e.target.value)
