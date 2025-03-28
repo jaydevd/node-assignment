@@ -18,7 +18,6 @@ const UserListView = () => {
 
     getUsers().then(data => setUsers(data));
     getCountries().then(data => setCountries(data));
-    // console.log(countries);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -32,7 +31,6 @@ const UserListView = () => {
         }
         fetchData();
     }, [search]);
-
 
     const fetchSearchedUsers = async (query) => {
         try {

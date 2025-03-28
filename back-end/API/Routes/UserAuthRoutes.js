@@ -9,7 +9,7 @@
  */
 
 const express = require("express");
-const { UserLogIn, UserLogOut, UserSignUp, EditProfile, SearchAccount } = require('./../Controllers/UserAuthController');
+const { UserLogIn, UserLogOut, UserSignUp, EditProfile, SearchAccount, GetUser } = require('./../Controllers/UserAuthController');
 const { CreateAccount, UpdateAccount, DeleteAccount, ListAccounts, FilterAccounts } = require('./../Controllers/AccountController');
 const isUserAuthenticated = require("../Middlewares/isUserAuthenticated");
 const router = express.Router();
@@ -48,5 +48,9 @@ router.route('/SearchAccount')
 router.route('/FilterAccounts')
     .all(isUserAuthenticated)
     .get(FilterAccounts);
+
+router.route('/DeleteAccount')
+    .all(isUserAuthenticated)
+    .post(DeleteAccount);
 
 module.exports = { UserAuthRoutes: router };

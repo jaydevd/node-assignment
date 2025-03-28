@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import ReactPaginate from 'react-paginate';
 import { v4 as uuidv4 } from 'uuid';
 import getCountries from "../../Hooks/Admin/getCountries";
 
@@ -8,6 +9,7 @@ const Countries = () => {
     const [addCity, setAddCity] = useState(false);
     const [countries, setCountries] = useState([]);
     const [country, setCountry] = useState(null);
+    const [currentPage, setCurrentPage] = useState(0);
 
     const [city, setCity] = useState({
         country: '',
@@ -24,14 +26,14 @@ const Countries = () => {
         e.preventDefault();
 
         try {
+            const token = localStorage.getItem("token");
 
-            const res = await axios.post('http://localhost:5000/admin/AddCountry', { country: country });
-            // const res = await axios.post('http://localhost:5000/admin/AddCountry', country,
-            //  {
-            //     'headers': {
-            //         'authorization': `Bearer ${token}`
-            //     }
-            // });
+            const res = await axios.post('http://localhost:5000/admin/AddCountry', { country: country },
+                {
+                    headers: {
+                        'authorization': `Bearer ${token}`
+                    }
+                });
             setAddCountry(false);
 
         } catch (error) {
@@ -47,19 +49,30 @@ const Countries = () => {
         e.preventDefault();
 
         try {
-            // console.log(city)
-            const res = await axios.post('http://localhost:5000/admin/AddCity', city)
-            // const res = await axios.post('http://localhost:5000/admin/AddCity', city, {
-            //     'headers': {
-            //         'authorization': `Bearer ${token}`
-            //     }
-            // });
+            const token = localStorage.getItem("token");
+            const res = await axios.post('http://localhost:5000/admin/AddCity', city, {
+                headers: {
+                    'authorization': `Bearer ${token}`
+                }
+            });
             setAddCity(false);
 
         } catch (error) {
             console.log(error);
         }
     }
+
+    // useEffect(() => {
+    //     if (country === "All") {
+    //         setFilteredUsers(countries);
+    //     } else {
+    //         setFilteredUsers(countries.filter(user => user.country === country));
+    //     }
+    // }, [country, users]);
+
+    const pageCount = Math.ceil(countries.length / 5);
+    const handlePageClick = ({ selected }) => setCurrentPage(selected);
+    const paginatedData = countries.slice(currentPage * 5, (currentPage + 1) * 5);
 
     return (
         <>
@@ -71,7 +84,7 @@ const Countries = () => {
                 </div>
                 <div>
                     {
-                        countries.map((data) => (
+                        paginatedData.map((data) => (
                             <ul key={uuidv4()} className="bg-neutral-300 rounded-md p-5 mx-3 hover:bg-neutral-400/40 duration-200 cursor-pointer">
                                 <li>{data.country}</li>
                                 <li>{data.city}</li>
@@ -79,6 +92,21 @@ const Countries = () => {
                         ))
                     }
                 </div>
+                {pageCount > 1 && (
+                    <div className="flex justify-center my-4">
+                        <ReactPaginate
+                            previousLabel={"← Previous"}
+                            nextLabel={"Next →"}
+                            breakLabel={"..."}
+                            pageCount={pageCount}
+                            marginPagesDisplayed={2}
+                            pageRangeDisplayed={3}
+                            onPageChange={handlePageClick}
+                            containerClassName={"pagination"}
+                            activeClassName={"active"}
+                        />
+                    </div>
+                )}
             </div >
             {addCountry && (
                 <div className="fixed inset-0 bg-neutral-500/40 flex items-center justify-center">
@@ -153,6 +181,7 @@ const Countries = () => {
                     </form>
                 </div>
             )}
+
         </>
     )
 }

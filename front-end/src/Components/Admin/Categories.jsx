@@ -15,9 +15,6 @@ const Categories = () => {
     });
 
     getCategories().then(data => setCategories(data));
-    console.log(categories);
-    // setCategories(data);
-    // getcategories.then(data => setCategories(data));
     // console.log(categories);
 
     const onCategoryChange = (e) => {
@@ -28,14 +25,14 @@ const Categories = () => {
         e.preventDefault();
 
         try {
-            console.log(category);
-            const res = await axios.post('http://localhost:5000/admin/AddCategory', { category: category });
-            // const res = await axios.post('http://localhost:5000/admin/AddCategory', category,
-            //  {
-            //     'headers': {
-            //         'authorization': `Bearer ${token}`
-            //     }
-            // });
+            // console.log(category);
+            // const res = await axios.post('http://localhost:5000/admin/AddCategory', { category: category });
+            const res = await axios.post('http://localhost:5000/admin/AddCategory', category,
+                {
+                    headers: {
+                        'authorization': `Bearer ${token}`
+                    }
+                });
             setAddCategory(false);
 
         } catch (error) {
@@ -51,13 +48,12 @@ const Categories = () => {
         e.preventDefault();
 
         try {
-            // console.log(subCategory)
-            const res = await axios.post('http://localhost:5000/admin/addSubCategory', subCategory)
-            // const res = await axios.post('http://localhost:5000/admin/addSubCategory', subCategory, {
-            //     'headers': {
-            //         'authorization': `Bearer ${token}`
-            //     }
-            // });
+            // const res = await axios.post('http://localhost:5000/admin/addSubCategory', subCategory)
+            const res = await axios.post('http://localhost:5000/admin/addSubCategory', subCategory, {
+                headers: {
+                    'authorization': `Bearer ${token}`
+                }
+            });
             setAddSubCategory(false);
 
         } catch (error) {

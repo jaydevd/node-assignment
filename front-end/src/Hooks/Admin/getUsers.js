@@ -11,14 +11,8 @@ const getUsers = async () => {
 
                     const token = localStorage.getItem("token");
 
-                    axios.get('http://localhost:5000/admin/ListUsers?page=1', { 'headers': { 'Authorization': `Bearer ${token}` } })
-                        .then(res => {
-                            setUsers(res.data.data);
-                            return users;
-                        })
-                        .catch(err => {
-                            console.log(err);
-                        })
+                    const res = await axios.get('http://localhost:5000/admin/ListUsers?page=1', { headers: { 'Authorization': `Bearer ${token}` } });
+                    setUsers(res.data.data);
                 } catch (error) {
                     console.log(error);
                 }

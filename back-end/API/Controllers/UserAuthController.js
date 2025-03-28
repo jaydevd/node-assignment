@@ -95,7 +95,7 @@ const UserLogIn = async (req, res) => {
 
         const user = await User.findOne({
             where: { email: email },
-            attributes: ['id', 'name', 'email', 'password', 'age', 'gender', 'country', 'city', 'company']
+            attributes: ['id', 'name', 'email', 'password', 'age', 'gender', 'country', 'city', 'company', 'token']
         });
 
         if (!user) {
@@ -125,13 +125,11 @@ const UserLogIn = async (req, res) => {
         // console.log("Password matched");
         const secretKey = process.env.SECRET_KEY;
 
-        const token = jwt.sign({
-            id: user.id
-        }, secretKey, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id }, secretKey, { expiresIn: '1h' });
 
         // console.log("token:", token);
 
-        await User.update(
+        const result = await User.update(
             { token: token },
             {
                 where: {
@@ -139,11 +137,12 @@ const UserLogIn = async (req, res) => {
                 },
             },
         );
-        // console.log(result);
+        console.log("token updation result (userLogIn): ", result);
+        console.log("user updated token (userLogIn): ", user.token);
 
         return res.status(200).json({
             status: HTTP_STATUS_CODES.SUCCESS,
-            data: user,
+            data: { user, token },
             message: '',
             error: ''
         });
@@ -192,7 +191,40 @@ const UserLogOut = async (req, res) => {
             status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             message: '',
             data: '',
-            error: error.message()
+            error: error.message
+        })
+    }
+}
+
+const GetUser = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        const user = User.findOne({ attributes: ['id', 'name', 'email', 'gender', 'age', 'country', 'city', 'company'] }, { where: { d: id } });
+
+        if (!user) {
+            return res.status(400).json({
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
+                message: '',
+                data: '',
+                error: ''
+            })
+        }
+
+        return res.status(200).json({
+            status: HTTP_STATUS_CODES.SUCCESS,
+            message: '',
+            data: user,
+            error: ''
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+            message: '',
+            data: '',
+            error: error.message
         })
     }
 }
@@ -205,6 +237,7 @@ const EditProfile = async (req, res) => {
         let validation = new Validator({
             id: id,
             name: name,
+            age: age,
             gender: gender,
             country: country,
             city: city,
@@ -223,7 +256,7 @@ const EditProfile = async (req, res) => {
 
         if (validation.fails()) {
             return res.status(400).json({
-                status: PAGE_NOT_FOUND,
+                status: HTTP_STATUS_CODES.CLIENT_ERROR,
                 data: '',
                 message: 'Invalid Credentials',
                 error: validation.errors.all()
@@ -249,7 +282,7 @@ const EditProfile = async (req, res) => {
         console.log(error);
 
         return res.status(500).json({
-            status: 500,
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             data: '',
             message: '',
             error: error.message
@@ -287,5 +320,6 @@ module.exports = {
     UserLogOut,
     UserSignUp,
     EditProfile,
-    SearchAccount
+    SearchAccount,
+    GetUser
 };

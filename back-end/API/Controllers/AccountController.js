@@ -26,7 +26,6 @@ const CreateAccount = async (req, res) => {
             description: description
         },
             {
-                id: 'required',
                 name: 'required',
                 category: 'required',
                 subCategory: 'required',
@@ -76,27 +75,15 @@ const CreateAccount = async (req, res) => {
 
 const ListAccounts = async (req, res) => {
     try {
-        const { id } = req.body;
-        const accountIDs = await User.findOne({ attributes: ['accounts'] }, { where: { id: id } });
-
-        if (!accountIDs) {
-            return res.status(400).json({
-                status: HTTP_STATUS_CODES.CLIENT_ERROR,
-                message: '',
-                data: '',
-                error: ''
-            });
+        console.log("List Accounts api");
+        const { id } = req.query;
+        console.log(id);
+        const accounts = await Account.findAll({
+            attributes: ['id', 'name', 'category', 'sub_category', 'is_active', 'created_by'],
+            where: { created_by: id, is_active: true }
         }
-
-        const accounts = await Account.findAll({ attributes: ['name', 'category', 'sub_category'] }, { where: { id: [accountIDs] } })
-        if (!accounts) {
-            return res.status(400).json({
-                status: HTTP_STATUS_CODES.CLIENT_ERROR,
-                message: '',
-                data: '',
-                error: ''
-            })
-        }
+        );
+        console.log("accounts: ", accounts);
 
         return res.status(200).json({
             status: HTTP_STATUS_CODES.SUCCESS,
@@ -111,7 +98,7 @@ const ListAccounts = async (req, res) => {
             status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             message: '',
             data: '',
-            error: error.message()
+            error: error.message
         })
     }
 }
@@ -162,10 +149,10 @@ const DeleteAccount = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            status: INTERNAL_SERVER_ERROR,
+            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
             message: "",
-            data: '',
-            error: error.message()
+            data: "",
+            error: error.message
         })
     }
 }

@@ -23,61 +23,59 @@ router.route('/logout')
     .post(AdminLogOut);
 
 router.route('/ListUsers')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .get(ListUsers);
 
 router.route('/SearchUsers')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .get(SearchUsers);
 
 router.route('/GetCountries')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .get(GetCountries);
 
 router.route('/GetCategories')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .get(GetCategories);
 
 router.route('/EditUser')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .post(EditUser);
 
 router.route('/DeleteUser')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .post(DeleteUser);
 
 router.route('/AddCountry')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .post(AddCountry);
 
 router.route('/DeleteCountry')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .post(DeleteCountry);
 
 router.route('/AddCity')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .post(AddCity);
 
 router.route('/DeleteCity')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .post(DeleteCity);
 
 router.route('/AddCategory')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .post(AddCategory);
 
 router.route('/DeleteCategory')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .post(DeleteCategory);
 
 router.route('/AddSubCategory')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .post(AddSubCategory);
 
 router.route('/DeleteSubCategory')
-    // .all(isAdminAuthenticated)
+    .all(isAdminAuthenticated)
     .post(DeleteSubCategory);
-
-
 
 module.exports = { AdminAuthRoutes: router };

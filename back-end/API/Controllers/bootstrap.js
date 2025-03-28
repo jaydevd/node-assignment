@@ -199,7 +199,7 @@ const ListUsers = async (req, res) => {
         const { page } = req.query;
         const limit = 20;
         const skip = (page - 1) * limit;
-        console.log(skip);
+        // console.log(skip);
 
         const users = await User.findAll({
             attributes: ['id', 'name', 'email', 'country', 'city', 'gender', 'age', 'company']
