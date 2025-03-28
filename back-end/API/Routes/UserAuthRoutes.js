@@ -30,7 +30,7 @@ router.route('/ListAccounts')
     .get(ListAccounts);
 
 router.route('/CreateAccount')
-    .all(isUserAuthenticated)
+    // .all(isUserAuthenticated)
     .post(CreateAccount);
 
 router.route('/UpdateAccount')

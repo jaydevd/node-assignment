@@ -252,7 +252,7 @@ const EditProfile = async (req, res) => {
             status: 500,
             data: '',
             message: '',
-            error: error.message()
+            error: error.message
         })
     }
 }
