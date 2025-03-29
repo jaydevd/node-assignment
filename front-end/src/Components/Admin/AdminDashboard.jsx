@@ -7,24 +7,27 @@ import Countries from "./Countries";
 import UserListView from "./UserListView";
 
 const AdminDashboard = () => {
-    const [showUsers, setShowUsers] = useState(false);
+    const [showUsers, setShowUsers] = useState(true);
     const [showCountries, setShowCountries] = useState(false);
-    const [showCategories, setShowCategories] = useState(true);
+    const [showCategories, setShowCategories] = useState(false);
     const navigate = useNavigate();
 
     const handleUsersView = () => {
-        setShowUsers(!showUsers);
-        setShowCountries(!showCountries);
+        setShowUsers(true);
+        setShowCategories(false);
+        setShowCountries(false);
     }
 
     const handleCountriesView = () => {
-        setShowUsers(!showUsers);
-        setShowCountries(!showCountries);
+        setShowUsers(false);
+        setShowCategories(false);
+        setShowCountries(true);
     }
 
     const handleCategoriesView = () => {
-        setShowUsers(!showUsers);
-        setShowCategories(!showCategories);
+        setShowUsers(false);
+        setShowCategories(true);
+        setShowCountries(false);
     }
 
     const handleLogOut = async () => {
@@ -32,7 +35,7 @@ const AdminDashboard = () => {
             const token = localStorage.getItem("token");
 
             const res = await axios.post('http://localhost:5000/admin/logout', token, {
-                'headers': {
+                headers: {
                     'authorization': `Bearer ${token}`
                 }
             });
@@ -50,11 +53,11 @@ const AdminDashboard = () => {
             <div className="h-screen w-full flex justify-center">
                 <div className="h-[85vh] relative w-2/12 bg-gray-700">
                     <ul className="w-8/12 flex flex-col gap-3 ml-10 m-10">
-                        <li className="text-sky-400 hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200 cursor-pointer"
+                        <li className={`${showUsers ? "text-sky-400" : "text-white"} hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200 cursor-pointer`}
                             onClick={handleUsersView}>Users List View</li>
-                        <li className="text-white hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200 cursor-pointer"
+                        <li className={`${showCountries ? "text-sky-400" : "text-white"} hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200 cursor-pointer`}
                             onClick={handleCountriesView}>Countries / Cities</li>
-                        <li className="text-white hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200 cursor-pointer"
+                        <li className={`${showCategories ? "text-sky-400" : "text-white"} hover:bg-blue-300/20 px-4 py-3 rounded-md duration-200 cursor-pointer`}
                             onClick={handleCategoriesView}
                         >Categories / Sub categories</li>
                     </ul>

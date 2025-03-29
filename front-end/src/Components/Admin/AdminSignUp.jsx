@@ -20,6 +20,9 @@ const AdminSignUp = () => {
         e.preventDefault();
         try {
             const res = await axios.post('http://localhost:5000/admin/signup', formData);
+            const token = res.data.data;
+            localStorage.setItem("token", token);
+
             navigate("/admin/dashboard");
 
         } catch (err) {

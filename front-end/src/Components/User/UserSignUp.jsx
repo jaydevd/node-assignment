@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import getCountries from './../../Hooks/User/getCountries';
 
 const UserSignUp = () => {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -12,6 +16,11 @@ const UserSignUp = () => {
         city: 'Rajkot',
         company: null
     });
+    const [countries, setCountries] = useState([]);
+
+    // useEffect(() => {
+    getCountries().then(data => setCountries(data));
+    // }, []);
 
     const { name, email, age, country, city, password, company } = formData;
 
@@ -24,6 +33,12 @@ const UserSignUp = () => {
 
         try {
             const res = await axios.post('http://localhost:5000/user/signup', formData);
+            const result = await axios.post('http://localhost:5000/user/login', { email, password });
+            const user = result.data.data.user;
+            const token = result.data.data.token;
+            localStorage.setItem("token", token);
+            navigate("/user/dashboard", { state: user });
+
         } catch (err) {
             console.log(err);
         }
@@ -58,13 +73,13 @@ const UserSignUp = () => {
                         </div>
                         <div className="flex flex-col gap-2">
                             <label htmlFor="country" className="ps-1">Country</label>
+
                             <select name="country" id="country" value={country} className="px-4 py-2 text-md bg-neutral-100 rounded-md" onChange={onChange} required>
-                                <option value="India">India</option>
-                                <option value="USA">USA</option>
-                                <option value="UK">UK</option>
-                                <option value="Russia">Russia</option>
-                                <option value="China">China</option>
-                                <option value="Japan">Japan</option>
+                                {
+                                    countries.map((country) => {
+                                        return <option key={country} value={country}>{country}</option>
+                                    })
+                                }
                             </select>
                         </div>
 

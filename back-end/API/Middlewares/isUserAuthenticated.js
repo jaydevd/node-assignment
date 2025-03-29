@@ -18,7 +18,7 @@ const isUserAuthenticated = async (req, res, next) => {
     try {
         const authHeader = req.headers['authorization'];
         const token = authHeader && authHeader.split(' ')[1];
-        // console.log(token);
+        console.log("isUserAuthenticated token: ", token);
 
         if (!token) {
             return res.status(400).json({
@@ -31,8 +31,10 @@ const isUserAuthenticated = async (req, res, next) => {
 
         // Verify JWT
         const payload = jwt.verify(token, process.env.SECRET_KEY);
+        console.log("payload: ", payload);
 
         if (!payload) {
+            console.log("payload not found");
             return res.status(400).json({
                 status: HTTP_STATUS_CODES.CLIENT_ERROR,
                 message: '',
@@ -43,14 +45,15 @@ const isUserAuthenticated = async (req, res, next) => {
 
         const user = await User.findOne({
             where: { token: token, id: payload.id },
-            attributes: ['name', 'email']
+            attributes: ['id', 'name', 'email', 'country', 'city', 'company', 'age', 'gender', 'token', 'is_active']
         });
+        console.log(user);
 
         if (!user) {
             return res.status(400).json({
                 status: '400',
                 message: '',
-                error: 'No user found',
+                error: 'isUserAuth No user found',
                 data: ''
             });
         }
@@ -60,18 +63,19 @@ const isUserAuthenticated = async (req, res, next) => {
                 status: '400',
                 message: '',
                 data: '',
-                error: 'some error occurred'
+                error: "token and user token doesn't match"
             });
         }
 
-        if (!user.isActive) {
+        if (!user.is_active) {
             return res.status(400).json({
                 status: '400',
                 message: '',
-                error: 'some error occurred',
+                error: 'user not active',
                 data: ''
             });
         }
+        // console.log("user from isUserAuthenticated: ", user.token);
         req.user = user;
         next();
     }

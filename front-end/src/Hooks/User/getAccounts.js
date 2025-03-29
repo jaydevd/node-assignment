@@ -3,24 +3,20 @@ import { useEffect, useState } from "react";
 
 const getAccounts = async (id) => {
   const [accounts, setAccounts] = useState([]);
+  const [idState, setIdState] = useState(id);
   try {
 
     useEffect(() => {
       const fetchAPI = async () => {
         try {
 
-          // const token = localStorage.getItem("token");
-          axios.get('http://localhost:5000/user/ListAccounts', {
-            params: { id: id }
-          })
-            // axios.get('http://localhost:5000/user/getAccounts', { 'headers': { 'Authorization': `Bearer ${token}` } })
-            .then(res => {
-              setAccounts(res.data.data);
-              return accounts;
-            })
-            .catch(err => {
-              console.log(err);
-            })
+          const token = localStorage.getItem("token");
+
+          const res = await axios.get('http://localhost:5000/user/ListAccounts', {
+            params: { id: idState },
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          setAccounts(res.data.data);
         } catch (error) {
           console.log(error);
         }

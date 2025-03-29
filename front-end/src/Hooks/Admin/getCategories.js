@@ -9,12 +9,10 @@ const getCategories = async () => {
             const fetchAPI = async () => {
                 try {
 
-                    // const token = localStorage.getItem("token");
+                    const token = localStorage.getItem("token");
 
-                    const res = await axios.get('http://localhost:5000/admin/GetCategories')
-                    // axios.get('http://localhost:5000/admin/GetCountries', { 'headers': { 'Authorization': `Bearer ${token}` } })
+                    const res = await axios.get('http://localhost:5000/admin/GetCategories', { headers: { 'Authorization': `Bearer ${token}` } })
                     setCategories(res.data.data);
-                    // console.log(res);
 
                 } catch (error) {
                     console.log(error);

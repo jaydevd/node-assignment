@@ -19,8 +19,13 @@ const UserLogIn = () => {
         e.preventDefault();
         try {
             const res = await axios.post('http://localhost:5000/user/login', formData);
-            navigate("/user/dashboard", { state: res.data.data });
-            // console.log("log in data: ", res.data.data);
+            const token = res.data.data.token;
+            const user = res.data.data.user;
+            console.log("log in token: ", token);
+            console.log("log in user: ", user);
+
+            localStorage.setItem("token", token);
+            navigate("/user/dashboard", { state: user });
 
         } catch (err) {
             console.log(err);
