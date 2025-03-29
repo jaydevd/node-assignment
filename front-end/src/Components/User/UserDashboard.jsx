@@ -188,6 +188,7 @@ const UserDashboard = () => {
                                 onSubmit={onEditProfileSubmit}
                                 className="bg-white p-6 rounded-md shadow-md w-1/3 flex flex-col gap-4"
                             >
+
                                 {[
                                     { label: 'Full name', name: 'name', type: 'text' },
                                     { label: 'Country', name: 'country', type: 'text' },
