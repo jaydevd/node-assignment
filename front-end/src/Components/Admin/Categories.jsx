@@ -1,24 +1,31 @@
 import axios from "axios";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import getCategories from './../../Hooks/Admin/getCategories';
+import getCatSubCats from './../../Hooks/Admin/getCatSubCats';
+import getCountriesCities from "../../Hooks/User/getCountriesCities";
 
 const Categories = () => {
     const [addCategory, setAddCategory] = useState(false);
     const [addSubCategory, setAddSubCategory] = useState(false);
-    const [categories, setCategories] = useState([]);
+    const [catSubCats, setCatSubCats] = useState([]);
     const [category, setCategory] = useState(null);
+    const [subCatByCat, setSubCatByCat] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
 
     const [subCategory, setSubCategory] = useState({
         category: '',
         subCategory: ''
     });
 
-    getCategories().then(data => setCategories(data));
+    getCatSubCats().then(data => setCatSubCats(data));
+    getCountriesCities().then(data => setCountriesCities(data));
     // console.log(categories);
 
     const onCategoryChange = (e) => {
-        setCategory(e.target.value)
+        const selectedCategory = e.target.value;
+        setSelectedCategory(selectedCategory);
+        const subCats = catSubCats.filter((data) => data.category === selectedCategory);
+        setSubCatByCat(subCats);
     }
 
     const onCategorySubmit = async (e) => {
@@ -71,7 +78,7 @@ const Categories = () => {
                 </div>
                 <div>
                     {
-                        categories.map((data) => (
+                        catSubCats.map((data) => (
                             <ul key={uuidv4()} className="bg-neutral-300 rounded-md p-5 mx-3 hover:bg-neutral-400/40 duration-200 cursor-pointer">
                                 <li>{data.category}</li>
                                 <li>{data.subCategory}</li>

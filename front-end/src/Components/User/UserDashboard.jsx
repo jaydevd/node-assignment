@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import ReactPaginate from 'react-paginate';
 import { useLocation, useNavigate } from "react-router-dom";
 import getAccounts from "../../Hooks/User/getAccounts";
+import getCatSubCats from "../../Hooks/User/getCatSubCats.js";
+import getCountriesCities from "../../Hooks/User/getCountriesCities.js";
 import Navbar from "../Navbar";
 
 import { v4 as uuidv4 } from 'uuid';
@@ -19,6 +21,30 @@ const UserDashboard = () => {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [selectedSubCategory, setSelectedSubCategory] = useState("");
     const [currentPage, setCurrentPage] = useState(0);
+
+    const [countriesCities, setCountriesCities] = useState([]);
+    const [citiesByCountries, setCitiesByCountries] = useState([]);
+
+    const [catSubCats, setCatSubCats] = useState([]);
+    const [subCatByCat, setSubCatByCat] = useState([]);
+
+    getCatSubCats().then(data => setCatSubCats(data));
+    getCountriesCities().then(data => setCountriesCities(data));
+
+    const onCategoryChange = (e) => {
+        const selectedCategory = e.target.value;
+        setSelectedCategory(selectedCategory);
+        const subCats = catSubCats.filter((data) => data.category === selectedCategory);
+        setSubCatByCat(subCats);
+    }
+
+    const onCountryChange = (e) => {
+        const selectedCountry = e.target.value;
+        const cities = countriesCities.filter((data) => data.country === selectedCountry);
+        setData({ ...data, [e.target.name]: e.target.value });
+
+        setCitiesByCountries(cities);
+    }
 
     const [account, setAccount] = useState({
         name: '',
@@ -84,7 +110,6 @@ const UserDashboard = () => {
     }
 
     const onSearchChange = (e) => setSearchTerm(e.target.value);
-    const onCategoryChange = (e) => setSelectedCategory(e.target.value);
     const onSubCategoryChange = (e) => setSelectedSubCategory(e.target.value);
     const onProfileChange = (e) => { setData({ ...data, [e.target.name]: e.target.value }); }
 
@@ -160,8 +185,8 @@ const UserDashboard = () => {
     const onUpdateAccountChange = (e) => {
         setUpdateAccount({ ...updateAccount, [e.target.name]: e.target.value });
     }
-    const uniqueCategories = [...new Set(accounts.map((acc) => acc.category))];
-    const uniqueSubCategories = [...new Set(accounts.map((acc) => acc.sub_category))];
+    // const uniqueCategories = [...new Set(accounts.map((acc) => acc.category))];
+    // const uniqueSubCategories = [...new Set(accounts.map((acc) => acc.sub_category))];
 
     const onDeleteAccount = (id) => {
         // e.preventDefault();
@@ -190,7 +215,7 @@ const UserDashboard = () => {
                     <div className="h-screen w-11/12 bg-neutral-200 flex flex-col items-center mx-auto">
                         <h2 className='w-full my-4 text-2xl text-neutral-700 font-medium'>Profile</h2>
                         <div className="w-full flex justify-between gap-5 bg-neutral-300 rounded-md p-10">
-                            <div className="w-1/2 flex flex-col gap-5">
+                            <div className="w-1/3 flex flex-col gap-5">
                                 <div className="flex flex-col ">
                                     <span className='text-teal-700 font-medium'>Name</span>
                                     <span className='font-bold'>{user.name}</span>
@@ -208,8 +233,8 @@ const UserDashboard = () => {
                                     <span className='font-bold'>{user.age}</span>
                                 </div>
                             </div>
-                            <div className="w-1/2 flex flex-col gap-5">
-                                <div className="flex flex-col">
+                            <div className="w-1/3 flex flex-col gap-5">
+                                <div className=" flex flex-col">
                                     <span className='text-teal-700 font-medium'>Country</span>
                                     <span className='font-bold'>{user.country}</span>
                                 </div>
@@ -222,8 +247,8 @@ const UserDashboard = () => {
                                     <span className='font-bold'>{user.company}</span>
                                 </div>
                             </div>
-                            <div>
-                                <button onClick={() => setEditProfile(true)} className="w-32 border border-blue-400 text-blue-400 rounded-md">Edit Profile</button>
+                            <div className="w-1/3 flex justify-end">
+                                <button onClick={() => setEditProfile(true)} className="w-fit px-3 py-1 border-0 bg-green-800 text-white rounded-md cursor-pointer h-fit">Edit Profile</button>
                             </div>
                         </div>
                         <div className="w-full relative mt-10 mb-5 flex justify-between">
@@ -237,20 +262,20 @@ const UserDashboard = () => {
                                 value={searchTerm}
                                 onChange={onSearchChange}
                             />
-                            <select className="p-2 border rounded-md" value={selectedCategory} onChange={onCategoryChange}>
+                            <select className="p-2 border rounded-md cursor-pointer" value={selectedCategory} onChange={onCategoryChange}>
                                 <option value="">All Categories</option>
-                                {uniqueCategories.map((cat) => (
-                                    <option key={cat} value={cat}>{cat}</option>
+                                {catSubCats.map((catSubCat) => (
+                                    <option key={catSubCat.category} value={catSubCat.category}>{catSubCat.category}</option>
                                 ))}
                             </select>
-                            <select className="p-2 border rounded-md" value={selectedSubCategory} onChange={onSubCategoryChange}>
+                            <select className="p-2 border rounded-md cursor-pointer" value={selectedSubCategory} onChange={onSubCategoryChange}>
                                 <option value="">All Subcategories</option>
-                                {uniqueSubCategories.map((subCat) => (
-                                    <option key={subCat} value={subCat}>{subCat}</option>
+                                {subCatByCat.map((subCat) => (
+                                    <option key={subCat.sub_category} value={subCat.sub_category}>{subCat.sub_category}</option>
                                 ))}
                             </select>
                             <button
-                                className="bg-blue-400 text-white px-4 py-2 rounded-md"
+                                className="bg-blue-400 text-white px-4 py-2 rounded-md cursor-pointer"
                                 onClick={() => setAddAccount(true)}
                             >
                                 Create Account
@@ -301,8 +326,6 @@ const UserDashboard = () => {
                             >
                                 {[
                                     { label: 'Name', name: 'name', type: 'text' },
-                                    { label: 'Category', name: 'category', type: 'text' },
-                                    { label: 'Sub Category', name: 'subCategory', type: 'text' },
                                 ].map(({ label, name, type }) => (
                                     <div key={name} className="flex flex-col">
                                         <label className="text-sm font-medium text-gray-500">{label}</label>
@@ -314,6 +337,18 @@ const UserDashboard = () => {
                                         />
                                     </div>
                                 ))}
+                                <select className="p-2 border rounded-md cursor-pointer" value={selectedCategory} onChange={onCategoryChange && onChange}>
+                                    <option value="">All Categories</option>
+                                    {catSubCats.map((catSubCat) => (
+                                        <option key={catSubCat.category} value={catSubCat.category}>{catSubCat.category}</option>
+                                    ))}
+                                </select>
+                                <select className="p-2 border rounded-md cursor-pointer" value={selectedSubCategory} onChange={onChange}>
+                                    <option value="">All Subcategories</option>
+                                    {subCatByCat.map((subCat) => (
+                                        <option key={subCat.sub_category} value={subCat.sub_category}>{subCat.sub_category}</option>
+                                    ))}
+                                </select>
 
                                 {/* Buttons */}
                                 <div className="flex justify-end gap-4 mt-4">
@@ -337,11 +372,8 @@ const UserDashboard = () => {
                                 onSubmit={onEditProfileSubmit}
                                 className="bg-white p-6 rounded-md shadow-md w-1/3 flex flex-col gap-4"
                             >
-
                                 {[
                                     { label: 'Full name', name: 'name', type: 'text' },
-                                    { label: 'Country', name: 'country', type: 'text' },
-                                    { label: 'City', name: 'city', type: 'text' },
                                     { label: 'Age', name: 'age', type: 'number' },
                                     { label: 'Company', name: 'company', type: 'text' }
                                 ].map(({ label, name, type }) => (
@@ -356,6 +388,38 @@ const UserDashboard = () => {
                                         />
                                     </div>
                                 ))}
+                                <div key={uuidv4()} className="flex flex-col">
+                                    <label className="text-sm font-medium text-gray-500">Country</label>
+                                    <select
+                                        name="filter-btn"
+                                        id="filter-btn"
+                                        className=" mt-1 px-4 border h-fit text-black bg-neutral-200 rounded-md py-2 pl-2 cursor-pointer"
+                                        value={data.country}
+                                        onChange={onCountryChange}
+                                    >
+                                        <option value="All">All Countries</option>
+                                        {countriesCities.map((data) => (
+                                            <option key={uuidv4()} value={data.country}>
+                                                {data.country}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <label className="mt-4 text-sm font-medium text-gray-500">City</label>
+                                    <select
+                                        name="filter-btn"
+                                        id="filter-btn"
+                                        className="mt-1 px-4 border h-fit text-black bg-neutral-200 rounded-md py-2 pl-2 cursor-pointer"
+                                        onChange={onChange}
+                                        value={data.city}
+                                    >
+                                        <option value="All">All Cities</option>
+                                        {citiesByCountries.map((data) => (
+                                            <option key={uuidv4()} value={data.city}>
+                                                {data.city}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
 
                                 {/* Email (Read-only) */}
                                 <div className="flex flex-col">
@@ -365,7 +429,7 @@ const UserDashboard = () => {
                                         name="email"
                                         value={user.email}
                                         readOnly
-                                        className="mt-1 px-4 py-2 border rounded-sm bg-gray-200 cursor-not-allowed"
+                                        className="mt-1 px-4 py-2 rounded-sm text-gray-700 bg-gray-200 cursor-not-allowed"
                                     />
                                 </div>
 
@@ -398,12 +462,12 @@ const UserDashboard = () => {
                                 <div className="flex justify-end gap-4 mt-4">
                                     <button
                                         type="button"
-                                        className="border border-blue-400 text-blue-400 px-4 py-2 rounded-sm"
+                                        className="border border-blue-400 text-blue-400 px-4 py-2 rounded-sm cursor-pointer"
                                         onClick={() => setEditProfile(false)}
                                     >
                                         Cancel
                                     </button>
-                                    <button type="submit" className="bg-blue-400 text-white px-4 py-2 rounded-sm">
+                                    <button type="submit" className="bg-blue-400 text-white px-4 py-2 rounded-sm cursor-pointer">
                                         Save Changes
                                     </button>
                                 </div>

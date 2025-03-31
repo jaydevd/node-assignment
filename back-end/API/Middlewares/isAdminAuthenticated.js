@@ -44,9 +44,11 @@ const isAdminAuthenticated = async (req, res, next) => {
     }
 
     const admin = await Admin.findOne({
-      where: { id: payload.id },
-      attributes: ['id', 'name', 'email', 'token', 'is_active']
+      attributes: ['id', 'name', 'email', 'token', 'is_active'],
+      where: { id: payload.id }
     });
+    console.log(admin.name);
+
 
     if (!admin.id) {
       return res.status(400).json({

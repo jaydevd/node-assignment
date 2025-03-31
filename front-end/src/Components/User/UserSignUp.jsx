@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import getCountries from './../../Hooks/User/getCountries';
+import getCountriesCities from './../../Hooks/User/getCountriesCities';
 
 const UserSignUp = () => {
     const navigate = useNavigate();
@@ -16,17 +16,27 @@ const UserSignUp = () => {
         city: 'Rajkot',
         company: null
     });
-    const [countries, setCountries] = useState([]);
 
-    // useEffect(() => {
-    getCountries().then(data => setCountries(data));
-    // }, []);
+    const [countriesCities, setCountriesCities] = useState([]);
+    const [citiesByCountry, setCitiesBycountry] = useState([]);
+
+    getCountriesCities().then(data => setCountriesCities(data));
+    // console.log("countries data from user sign up page: ", countriesCities);
 
     const { name, email, age, country, city, password, company } = formData;
 
     const onChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
+    const onCountryChange = (e) => {
+        const selectedCountry = e.target.value;
+        setFormData({ ...formData, country: selectedCountry });
+        const cities = countriesCities.filter((data) => data.country === selectedCountry);
+        setCitiesBycountry(cities);
+        // console.log(cities);
+        // console.log("cities by country: ", citiesByCountry);
+    }
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -74,10 +84,10 @@ const UserSignUp = () => {
                         <div className="flex flex-col gap-2">
                             <label htmlFor="country" className="ps-1">Country</label>
 
-                            <select name="country" id="country" value={country} className="px-4 py-2 text-md bg-neutral-100 rounded-md" onChange={onChange} required>
+                            <select name="country" id="country" value={country} className="px-4 py-2 text-md bg-neutral-100 rounded-md" onChange={onCountryChange} required>
                                 {
-                                    countries.map((country) => {
-                                        return <option key={country} value={country}>{country}</option>
+                                    countriesCities.map((data) => {
+                                        return <option key={data.country} value={data.country}>{data.country}</option>
                                     })
                                 }
                             </select>
@@ -85,14 +95,13 @@ const UserSignUp = () => {
 
                         <div className="flex flex-col gap-2">
                             <label htmlFor="city" className="ps-1">City</label>
-                            <select name="city" id="city" className="px-4 py-2 text-md bg-neutral-100 rounded-md" value={city} onChange={onChange} required>
-                                <option value="Rajkot">Rajkot</option>
-                                <option value="Gandhinagar">Gandhinagar</option>
-                                <option value="Bhopal">Bhopal</option>
-                                <option value="Indore">Indore</option>
-                                <option value="Jaipur">Jaipur</option>
-                                <option value="Delhi">Delhi</option>
-                                <option value="Mumbai">Mumbai</option>
+                            <select name="country" value={city} className="px-4 py-2 text-md bg-neutral-100 rounded-md" onChange={onChange} required>
+                                {
+                                    citiesByCountry &&
+                                    citiesByCountry.map((data) => {
+                                        return <option key={data.city} value={data.city}>{data.city}</option>
+                                    })
+                                }
                             </select>
                         </div>
                         <div className="flex flex-col gap-2">

@@ -9,8 +9,10 @@
  */
 
 const express = require("express");
-const { UserLogIn, UserLogOut, UserSignUp, EditProfile, SearchAccount, GetUser } = require('./../Controllers/UserAuthController');
+const { UserLogIn, UserLogOut, UserSignUp, EditProfile, SearchAccount } = require('./../Controllers/UserAuthController');
 const { CreateAccount, UpdateAccount, DeleteAccount, ListAccounts, FilterAccounts } = require('./../Controllers/AccountController');
+const { GetCatSubCats } = require('./../Controllers/CategoryController');
+const { GetCountriesCities } = require('./../Controllers/CountryController');
 const isUserAuthenticated = require("../Middlewares/isUserAuthenticated");
 const router = express.Router();
 
@@ -30,7 +32,7 @@ router.route('/ListAccounts')
     .get(ListAccounts);
 
 router.route('/CreateAccount')
-    // .all(isUserAuthenticated)
+    .all(isUserAuthenticated)
     .post(CreateAccount);
 
 router.route('/UpdateAccount')
@@ -52,5 +54,11 @@ router.route('/FilterAccounts')
 router.route('/DeleteAccount')
     .all(isUserAuthenticated)
     .post(DeleteAccount);
+
+router.route('/GetCatSubCats')
+    .get(GetCatSubCats);
+
+
+router.get('/GetCountriesCities', GetCountriesCities);
 
 module.exports = { UserAuthRoutes: router };

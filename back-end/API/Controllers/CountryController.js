@@ -14,15 +14,17 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User, Account, CountriesCities } = require('../Models/index');
 const { HTTP_STATUS_CODES } = require('../Config/constants');
+const { application } = require('express');
 
-const AddCountry = async (req, res) => {
+const AddCountryCity = async (req, res) => {
     try {
         console.log("Add Country");
-        const { country } = req.body;
-        console.log(country);
+        const { country, city } = req.body;
+        console.log(country, city);
 
         const id = uuidv4();
-        const result = await CountriesCities.create({ id: id, country: country });
+        const result = await CountriesCities.create({ id: id, country: country, city: city });
+        console.log(result);
 
         if (!result) {
             return res.status(400).json({
@@ -50,7 +52,7 @@ const AddCountry = async (req, res) => {
     }
 }
 
-const DeleteCountry = async (req, res) => {
+const DeleteCountryCity = async (req, res) => {
     try {
         const { id } = req.body;
         const res = CountriesCities.destroy({ where: { id: id } });
@@ -72,39 +74,14 @@ const DeleteCountry = async (req, res) => {
     }
 }
 
-const AddCity = async (req, res) => {
+const GetCountriesCities = async (req, res) => {
     try {
-        const { country, city } = req.body;
-        const id = uuidv4();
-        console.log(country, city);
+        console.log("country api called!");
 
-        const validation = new Validator({
-            country: country,
-            city: city
-        },
-            {
-                country: 'required',
-                city: 'max:60'
-            })
+        const countries = await CountriesCities.findAll({ attributes: ['country', 'city'] });
+        console.log(countries);
 
-        if (validation.fails()) {
-            return res.status(400).json({
-                status: HTTP_STATUS_CODES.CLIENT_ERROR,
-                message: '',
-                data: '',
-                error: validation.errors.all()
-            })
-        }
-
-        const result = await CountriesCities.create(
-            {
-                id: id,
-                country: country,
-                city: city
-            }
-        );
-
-        if (!result) {
+        if (!countries) {
             return res.status(400).json({
                 status: HTTP_STATUS_CODES.CLIENT_ERROR,
                 message: '',
@@ -115,7 +92,7 @@ const AddCity = async (req, res) => {
         return res.status(200).json({
             status: HTTP_STATUS_CODES.SUCCESS,
             message: '',
-            data: '',
+            data: countries,
             error: ''
         })
     } catch (error) {
@@ -126,34 +103,12 @@ const AddCity = async (req, res) => {
             data: '',
             error: error.message
         })
-    }
-}
 
-const DeleteCity = async (req, res) => {
-    try {
-        const { id, country } = req.body;
-        const res = CountriesCities.destroy({ where: { id: id, country: country } });
-
-        return res.status(200).json({
-            status: HTTP_STATUS_CODES.SUCCESS,
-            message: '',
-            data: '',
-            error: ''
-        })
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-            message: '',
-            data: '',
-            error: error.message
-        })
     }
 }
 
 module.exports = {
-    AddCountry,
-    DeleteCountry,
-    AddCity,
-    DeleteCity
+    AddCountryCity,
+    DeleteCountryCity,
+    GetCountriesCities
 }

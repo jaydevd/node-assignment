@@ -10,8 +10,8 @@
 
 const express = require("express");
 const { AdminLogIn, AdminLogOut, AdminSignUp, ListUsers, SearchUsers, GetCountries, EditUser, DeleteUser } = require('../Controllers/bootstrap');
-const { AddCountry, DeleteCountry, AddCity, DeleteCity } = require("./../Controllers/CountryController");
-const { AddCategory, DeleteCategory, AddSubCategory, DeleteSubCategory, GetCategories } = require("./../Controllers/CategoryController");
+const { AddCountryCity, DeleteCountryCity, GetCountriesCities } = require("./../Controllers/CountryController");
+const { AddCatSubCats, DeleteCatSubCats, GetCatSubCats } = require("./../Controllers/CategoryController");
 const isAdminAuthenticated = require('../Middlewares/isAdminAuthenticated');
 const router = express.Router();
 
@@ -30,14 +30,6 @@ router.route('/SearchUsers')
     .all(isAdminAuthenticated)
     .get(SearchUsers);
 
-router.route('/GetCountries')
-    .all(isAdminAuthenticated)
-    .get(GetCountries);
-
-router.route('/GetCategories')
-    .all(isAdminAuthenticated)
-    .get(GetCategories);
-
 router.route('/EditUser')
     .all(isAdminAuthenticated)
     .post(EditUser);
@@ -46,36 +38,26 @@ router.route('/DeleteUser')
     .all(isAdminAuthenticated)
     .post(DeleteUser);
 
-router.route('/AddCountry')
+router.route('/AddCountryCity')
     .all(isAdminAuthenticated)
-    .post(AddCountry);
+    .post(AddCountryCity);
 
-router.route('/DeleteCountry')
+router.route('/DeleteCountryCity')
     .all(isAdminAuthenticated)
-    .post(DeleteCountry);
+    .post(DeleteCountryCity);
 
-router.route('/AddCity')
-    .all(isAdminAuthenticated)
-    .post(AddCity);
+router.route('/GetCountriesCities')
+    .get(GetCountriesCities);
 
-router.route('/DeleteCity')
-    .all(isAdminAuthenticated)
-    .post(DeleteCity);
+router.route('/GetCategories')
+    .get(GetCatSubCats);
 
-router.route('/AddCategory')
+router.route('/AddCatSubCats')
     .all(isAdminAuthenticated)
-    .post(AddCategory);
+    .post(AddCatSubCats);
 
-router.route('/DeleteCategory')
+router.route('/DeleteCatSubCats')
     .all(isAdminAuthenticated)
-    .post(DeleteCategory);
-
-router.route('/AddSubCategory')
-    .all(isAdminAuthenticated)
-    .post(AddSubCategory);
-
-router.route('/DeleteSubCategory')
-    .all(isAdminAuthenticated)
-    .post(DeleteSubCategory);
+    .post(DeleteCatSubCats);
 
 module.exports = { AdminAuthRoutes: router };

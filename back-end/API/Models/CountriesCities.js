@@ -23,7 +23,7 @@ const CountriesCities = sequelize.define("CountriesCities", {
     country: {
         type: DataTypes.STRING(60),
         allowNull: false,
-        unique: true
+        unique: false
     }
 },
     {

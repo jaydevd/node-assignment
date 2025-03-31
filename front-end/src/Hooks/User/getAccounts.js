@@ -17,6 +17,8 @@ const getAccounts = async (id) => {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           setAccounts(res.data.data);
+          console.log(accounts, "accounts from user hook getAccounts");
+
         } catch (error) {
           console.log(error);
         }

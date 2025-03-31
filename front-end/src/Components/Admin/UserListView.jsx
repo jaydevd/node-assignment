@@ -4,20 +4,21 @@ import { useCallback, useEffect, useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import getCountries from '../../Hooks/Admin/getCountries';
+import getCountriesCities from '../../Hooks/Admin/getCountriesCities';
 import getUsers from './../../Hooks/Admin/getUsers';
 
 const UserListView = () => {
     const [users, setUsers] = useState([]);
     const [country, setCountry] = useState("All");
     const [search, setSearch] = useState("");
-    const [countries, setCountries] = useState([]);
+    const [countriesCities, setCountriesCities] = useState([]);
+    const [citiesByCountries, setCitiesByCountries] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const navigate = useNavigate();
 
     getUsers().then(data => setUsers(data));
-    getCountries().then(data => setCountries(data));
+    getCountriesCities().then(data => setCountriesCities(data));
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,6 +62,13 @@ const UserListView = () => {
         setSearch(e.target.value);
     }
 
+    const onCountryChange = (e) => {
+        const selectedCountry = e.target.value;
+        setCountry(selectedCountry);
+        const cities = countriesCities.filter((data) => data.country === selectedCountry);
+        setCitiesByCountries(cities);
+    }
+
     useEffect(() => {
         if (country === "All") {
             setFilteredUsers(users);
@@ -85,12 +93,25 @@ const UserListView = () => {
                     id="filter-btn"
                     className="w-fit h-fit border-none text-black bg-gray-300 rounded-md py-2 pl-2 cursor-pointer"
                     value={country}
-                    onChange={onChange}
+                    onChange={onCountryChange}
                 >
                     <option value="All">All Countries</option>
-                    {countries.map((data) => (
+                    {countriesCities.map((data) => (
                         <option key={uuidv4()} value={data.country}>
                             {data.country}
+                        </option>
+                    ))}
+                </select>
+                <select
+                    name="filter-btn"
+                    id="filter-btn"
+                    className="w-fit h-fit border-none text-black bg-gray-300 rounded-md py-2 pl-2 cursor-pointer"
+                    onChange={onChange}
+                >
+                    <option value="All">All Cities</option>
+                    {citiesByCountries.map((data) => (
+                        <option key={uuidv4()} value={data.city}>
+                            {data.city}
                         </option>
                     ))}
                 </select>

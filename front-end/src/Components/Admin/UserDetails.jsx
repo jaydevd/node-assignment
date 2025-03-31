@@ -7,6 +7,9 @@ const UserDetails = () => {
     const user = location.state;
     const navigate = useNavigate();
 
+    const [countriesCities, setCountriesCities] = useState([]);
+    const [citiesByCountry, setCitiesBycountry] = useState([]);
+
     const [edit, setEdit] = useState(false);
     const [formData, setFormData] = useState({
         name: user?.name || '',
@@ -22,6 +25,13 @@ const UserDetails = () => {
     const onChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
+    onCountryChange = (e) => {
+        const selectedCountry = e.target.value;
+        setFormData({ ...formData, country: selectedCountry });
+        const cities = countriesCities.filter((data) => data.country === selectedCountry);
+        setCitiesBycountry(cities);
+    }
 
     const onSubmit = async (e) => {
         e.preventDefault();
