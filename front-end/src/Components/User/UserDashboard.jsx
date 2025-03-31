@@ -81,11 +81,11 @@ const UserDashboard = () => {
         });
     }, []);
 
-    useEffect(() => {
-        getAccounts().then((data) => {
-            setAccounts(data);
-        });
-    }, []);
+    // useEffect(() => {
+    //     getAccounts().then((data) => {
+    //         setAccounts(data);
+    //     });
+    // }, []);
 
     useEffect(() => {
         let filtered = [...accounts];
@@ -202,7 +202,7 @@ const UserDashboard = () => {
 
     const pageCount = Math.ceil(filteredAccounts.length / 5);
     const handlePageClick = ({ selected }) => setCurrentPage(selected);
-    const paginatedData = accounts.slice(currentPage * 5, (currentPage + 1) * 5);
+    const paginatedData = filteredAccounts.slice(currentPage * 5, (currentPage + 1) * 5);
 
     return (
         <>
